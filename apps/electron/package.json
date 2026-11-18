@@ -5,8 +5,11 @@
     "private": true,
     "main": "./main.js",
     "type": "commonjs",
-    "dependencies": {},
+    "dependencies": {
+        "better-sqlite3": "^13.2.0"
+    },
     "devDependencies": {
+        "@types/better-sqlite3": "^9.6.0",
         "electron": "45.3.4"
     },
     "config": {

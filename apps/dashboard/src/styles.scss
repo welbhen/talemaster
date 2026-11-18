@@ -1,2 +1,11 @@
-@import "@openng/icons/openng-icons.css";
 @use "visual-identity/styles" as *;
+@import "@openng/icons/openng-icons.css";
+
+html,
+body {
+    min-height: 100%;
+}
+
+body {
+    margin: 0;
+}

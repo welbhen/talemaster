@@ -14,7 +14,7 @@
                 "outputPath": "dist/apps/electron",
                 "format": ["cjs"],
                 "bundle": true,
-                "external": ["electron"],
+                "external": ["electron", "better-sqlite3"],
                 "main": "apps/electron/src/main.ts",
                 "tsConfig": "apps/electron/tsconfig.app.json",
                 "assets": ["apps/electron/src/assets"],
