@@ -1,8 +1,12 @@
 <div align="center">
-  <img src="libs/visual-identity/assets/logos/logo.png" alt="TaleMaster — RPG Dashboard" width="560" />
 
-  <h1>TaleMaster</h1>
-  <p><strong>A system-agnostic, offline-first tabletop RPG dashboard.</strong></p>
+<img src="libs/visual-identity/assets/logos/logo.png" alt="TaleMaster" width="160" />
+
+# TaleMaster
+
+**An offline-first, system-agnostic workspace for tabletop RPG campaigns.**
+
+[Website](#) · [Getting started](#getting-started) · [Technology stack](#technology-stack) · [Architecture](#architecture-overview) · [Contributing](#contributing)
 
 </div>
 
