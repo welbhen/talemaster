@@ -32,5 +32,8 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Check copyright headers
+        run: npm run copyright:check
+
       - name: Check formatting
         run: npm run format:check
