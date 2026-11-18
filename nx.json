@@ -7,6 +7,18 @@
             "cache": true,
             "dependsOn": ["^build"],
             "inputs": ["default", "^default"]
+        },
+        "@nx/esbuild:esbuild": {
+            "cache": true,
+            "dependsOn": ["^build"],
+            "inputs": [
+                "default",
+                "^default",
+                {
+                    "json": "{workspaceRoot}/tsconfig.json",
+                    "fields": ["extends", "files", "include"]
+                }
+            ]
         }
     },
     "plugins": [
@@ -27,7 +39,8 @@
             "options": {
                 "targetName": "e2e"
             }
-        }
+        },
+        "@nx/js/tsx"
     ],
     "generators": {
         "@nx/angular:application": {

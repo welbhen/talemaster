@@ -1,0 +1,25 @@
+{
+    "name": "talemaster",
+    "productName": "TaleMaster",
+    "version": "0.0.1",
+    "private": true,
+    "main": "./main.js",
+    "type": "commonjs",
+    "dependencies": {},
+    "devDependencies": {
+        "electron": "45.3.4"
+    },
+    "config": {
+        "forge": {
+            "makers": [
+                {
+                    "name": "@electron-forge/maker-zip",
+                    "platforms": [
+                        "win32"
+                    ]
+                }
+            ],
+            "publishers": []
+        }
+    }
+}
