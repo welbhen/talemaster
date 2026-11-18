@@ -1,0 +1,28 @@
+{
+    "name": "talemaster",
+    "productName": "TaleMaster",
+    "version": "0.0.1",
+    "private": true,
+    "main": "./main.js",
+    "type": "commonjs",
+    "dependencies": {
+        "better-sqlite3": "^13.2.0"
+    },
+    "devDependencies": {
+        "@types/better-sqlite3": "^9.6.0",
+        "electron": "45.3.4"
+    },
+    "config": {
+        "forge": {
+            "makers": [
+                {
+                    "name": "@electron-forge/maker-zip",
+                    "platforms": [
+                        "win32"
+                    ]
+                }
+            ],
+            "publishers": []
+        }
+    }
+}

@@ -1,0 +1,10 @@
+node_modules
+dist
+out-tsc
+coverage
+.nx
+.angular
+.git
+.git*
+.vscode
+package-lock.json
