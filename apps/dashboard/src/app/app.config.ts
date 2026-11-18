@@ -2,7 +2,8 @@ import { provideHttpClient } from "@angular/common/http";
 import { ApplicationConfig, isDevMode, provideBrowserGlobalErrorListeners } from "@angular/core";
 import { provideRouter } from "@angular/router";
 import { provideTransloco } from "@jsverse/transloco";
-
+import { provideOptimus } from "@openng/optimus-ui/config";
+import Material from "@openng/optimus-ui-themes/material";
 import { appRoutes } from "./app.routes";
 import { TranslocoHttpLoader } from "./transloco-loader";
 
@@ -20,6 +21,11 @@ export const appConfig: ApplicationConfig = {
                 prodMode: !isDevMode(),
             },
             loader: TranslocoHttpLoader,
+        }),
+        provideOptimus({
+            theme: {
+                preset: Material,
+            },
         }),
     ],
 };
