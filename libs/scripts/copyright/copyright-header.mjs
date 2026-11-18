@@ -74,23 +74,29 @@ export function getHeaderForFile(filePath) {
 export function insertHeader(content, header) {
     const hasBom = content.startsWith("\uFEFF");
     const withoutBom = hasBom ? content.slice(1) : content;
+    const lineEnding = withoutBom.includes("\r\n") ? "\r\n" : "\n";
+    const formattedHeader = header.replace(/\n/g, lineEnding);
+
     const shebangMatch = withoutBom.match(/^#![^\r\n]*(?:\r\n|\n|\r|$)/);
 
     if (shebangMatch) {
         const shebang = shebangMatch[0];
         const remainder = withoutBom.slice(shebang.length);
 
-        return `${hasBom ? "\uFEFF" : ""}${shebang}${header}\n\n${remainder}`;
+        return `${hasBom ? "\uFEFF" : ""}${shebang}${formattedHeader}${lineEnding}${lineEnding}${remainder}`;
     }
 
-    return `${hasBom ? "\uFEFF" : ""}${header}\n\n${withoutBom}`;
+    return `${hasBom ? "\uFEFF" : ""}${formattedHeader}${lineEnding}${lineEnding}${withoutBom}`;
 }
 
 export function hasHeader(content, header) {
     const withoutBom = content.startsWith("\uFEFF") ? content.slice(1) : content;
 
+    const lineEnding = withoutBom.includes("\r\n") ? "\r\n" : "\n";
+    const formattedHeader = header.replace(/\n/g, lineEnding);
+
     const shebangMatch = withoutBom.match(/^#![^\r\n]*(?:\r\n|\n|\r|$)/);
     const source = shebangMatch ? withoutBom.slice(shebangMatch[0].length) : withoutBom;
 
-    return source.startsWith(header);
+    return source.startsWith(formattedHeader);
 }
