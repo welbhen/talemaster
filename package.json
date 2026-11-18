@@ -30,7 +30,9 @@
         "test": "nx test dashboard",
         "lint": "nx lint dashboard",
         "format": "prettier --write .",
-        "format:check": "prettier --check ."
+        "format:check": "prettier --check .",
+        "copyright:add": "node libs/scripts/copyright/add-headers.mjs",
+        "copyright:check": "node libs/scripts/copyright/check-headers.mjs"
     },
     "devDependencies": {
         "@angular-devkit/core": "~22.2.0",
