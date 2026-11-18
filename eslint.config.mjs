@@ -5,37 +5,26 @@ export default [
     ...nx.configs["flat/typescript"],
     ...nx.configs["flat/javascript"],
     {
-        ignores: [
-            "**/dist",
-            "**/out-tsc"
-        ]
+        ignores: ["**/dist", "**/out-tsc"],
     },
     {
-        files: [
-            "**/*.ts",
-            "**/*.tsx",
-            "**/*.js",
-            "**/*.jsx"
-        ],
+        files: ["**/*.ts", "**/*.tsx", "**/*.js", "**/*.jsx"],
         rules: {
             "@nx/enforce-module-boundaries": [
                 "error",
                 {
                     enforceBuildableLibDependency: true,
-                    allow: [
-                        "^.*/eslint(\\.base)?\\.config\\.[cm]?[jt]s$"
-                    ],
+                    allow: ["^.*/eslint(\\.base)?\\.config\\.[cm]?[jt]s$"],
                     depConstraints: [
                         {
                             sourceTag: "*",
-                            onlyDependOnLibsWithTags: [
-                                "*"
-                            ]
-                        }
-                    ]
-                }
-            ]
-        }
+                            onlyDependOnLibsWithTags: ["*"],
+                        },
+                    ],
+                },
+            ],
+            "@typescript-eslint/no-explicit-any": "warn",
+        },
     },
     {
         files: [
@@ -46,9 +35,9 @@ export default [
             "**/*.js",
             "**/*.jsx",
             "**/*.cjs",
-            "**/*.mjs"
+            "**/*.mjs",
         ],
         // Override or add rules here
-        rules: {}
-    }
+        rules: {},
+    },
 ];

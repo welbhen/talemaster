@@ -5,11 +5,8 @@ export default [
     playwright.configs["flat/recommended"],
     ...baseConfig,
     {
-        files: [
-            "**/*.ts",
-            "**/*.js"
-        ],
+        files: ["**/*.ts", "**/*.js"],
         // Override or add rules here
-        rules: {}
-    }
+        rules: {},
+    },
 ];
