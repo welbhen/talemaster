@@ -3,7 +3,7 @@
 
   <h1>TaleMaster</h1>
   <p><strong>A system-agnostic, offline-first tabletop RPG dashboard.</strong></p>
-  
+
 </div>
 
 ---
