@@ -19,9 +19,22 @@
                     {
                         "glob": "**/*",
                         "input": "apps/dashboard/public"
+                    },
+                    {
+                        "glob": "**/*",
+                        "input": "libs/visual-identity/assets",
+                        "output": "assets/visual-identity"
+                    },
+                    {
+                        "glob": "**/*",
+                        "input": "libs/i18n/src/assets",
+                        "output": "assets/i18n"
                     }
                 ],
-                "styles": ["apps/dashboard/src/styles.scss"]
+                "styles": ["apps/dashboard/src/styles.scss"],
+                "stylePreprocessorOptions": {
+                    "includePaths": ["libs"]
+                }
             },
             "configurations": {
                 "production": {

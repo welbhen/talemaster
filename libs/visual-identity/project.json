@@ -1,0 +1,8 @@
+{
+    "name": "visual-identity",
+    "$schema": "../../node_modules/nx/schemas/project-schema.json",
+    "projectType": "library",
+    "root": "libs/visual-identity",
+    "sourceRoot": "libs/visual-identity",
+    "tags": ["scope:shared", "type:assets"]
+}

@@ -82,6 +82,7 @@
     },
     "nx": {},
     "dependencies": {
+        "@angular/cdk": "^22.2.6",
         "@angular/common": "~22.2.0",
         "@angular/compiler": "~22.2.0",
         "@angular/core": "~22.2.0",
@@ -89,6 +90,11 @@
         "@angular/platform-browser": "~22.2.0",
         "@angular/platform-browser-dynamic": "~22.2.0",
         "@angular/router": "~22.2.0",
+        "@jsverse/transloco": "^8.4.0",
+        "@openng/icons": "^1.0.0",
+        "@openng/optimus-ui": "^2.0.2",
+        "@openng/optimus-ui-themes": "^2.0.2",
+        "ngx-editor": "^19.1.1",
         "rxjs": "~7.8.0"
     }
 }

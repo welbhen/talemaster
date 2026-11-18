@@ -15,7 +15,7 @@
                 "default",
                 "^default",
                 {
-                    "json": "{workspaceRoot}/tsconfig.json",
+                    "json": "{workspaceRoot}/tsconfig.base.json",
                     "fields": ["extends", "files", "include"]
                 }
             ]
