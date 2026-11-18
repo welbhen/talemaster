@@ -24,7 +24,53 @@ This file tracks the next engineering tasks for the current foundation phase. It
 - [x] Database infrastructure tests implemented and passing locally.
 - [ ] GitHub Actions test execution and CI validation updates: changes prepared; awaiting push and successful GitHub Actions verification.
 
-## Next session — secure Electron IPC boundary
+## Next session — logging infrastructure
+
+### 1. Logging library
+
+- [ ] Create a dedicated Nx logging library under `libs/logging`.
+- [ ] Define a small, typed logging API with `LOG`, `WARN`, `DEBUG`, and `ERROR` levels.
+- [ ] Include ISO 8601 timestamps, contextual logger names, messages, and structured metadata.
+- [ ] Implement error serialization, including error names, messages, and stack traces.
+- [ ] Enable `DEBUG` automatically in development and suppress it in production.
+- [ ] Implement a readable console transport.
+- [ ] Implement persistent JSON Lines file logging.
+- [ ] Store logs beneath Electron's `app.getPath('userData')/logs` directory.
+- [ ] Implement size-based log rotation: 5 MB maximum per file and five retained files.
+- [ ] Ensure logging failures never propagate into application operations or cause recursive logging failures.
+- [ ] Initialize logging before SQLite so database initialization failures can be recorded.
+- [ ] Integrate the logger into the Electron main-process lifecycle.
+- [ ] Replace existing application `console.log`, `console.warn`, `console.error`, and related error-reporting calls with the appropriate logger methods.
+- [ ] Keep renderer logging and filesystem access out of scope until the secure IPC boundary is implemented.
+- [ ] Add tests for log levels, timestamps, metadata, error serialization, console output, file persistence, rotation, retention, and failure handling.
+- [ ] Verify development and production logging behavior.
+
+### 2. Copyright headers and compliance automation
+
+- [ ] Establish the project copyright header:
+
+    ```text
+    /**
+     * Copyright 2026 Welberth Marques
+     * github.com/welbhen/talemaster
+     * SPDX-License-Identifier: Apache-2.0
+     */
+    ```
+
+- [ ] Define comment syntax for each supported source-file type while preserving the exact header text.
+- [ ] Include project-owned source files, tests, and configuration source files.
+- [ ] Exclude JSON, YAML, Markdown, lockfiles, generated files, dependencies, build outputs, and binary files.
+- [ ] Implement a shared copyright-header configuration.
+- [ ] Create a script to add missing headers to existing Git-tracked source files.
+- [ ] Support dry-run mode and prevent duplicate headers.
+- [ ] Preserve existing file contents, line endings, BOMs, and shebangs.
+- [ ] Create a copyright validation script that exits unsuccessfully when eligible files have missing or invalid headers.
+- [ ] Apply headers to existing eligible source files and review the resulting changes.
+- [ ] Add `copyright:add` and `copyright:check` npm scripts.
+- [ ] Integrate `copyright:check` into GitHub Actions pull-request validation.
+- [ ] Add tests for header insertion, validation, exclusions, and special file handling.
+
+## Remaining technical foundation work
 
 ### 1. Secure Electron IPC boundary
 
@@ -66,7 +112,7 @@ This file tracks the next engineering tasks for the current foundation phase. It
 ## GitHub and project maintenance
 
 - [ ] Verify updated GitHub Actions workflows on GitHub after pushing the CI changes.
-- [ ] Ensure formatting, unit tests, and production builds are enforced on pull requests.
+- [ ] Ensure formatting, unit tests, production builds, and copyright validation are enforced on pull requests.
 - [ ] Configure branch protection/rulesets for `master` after the checks have run successfully.
 - [ ] Decide release versioning, changelog, and distribution process.
 - [ ] Review supported third-party content licenses before importing or redistributing content.
