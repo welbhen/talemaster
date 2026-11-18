@@ -12,25 +12,21 @@ This file tracks the next engineering tasks for the current foundation phase. It
 - [x] Windows x64 ZIP packaging completed successfully.
 - [x] Nx root lockfile pruning issue resolved; Electron package target completed without the earlier warning.
 - [x] Shared visual-identity and localization resource foundations established.
+- [x] Electron database module boundaries and TypeScript build configuration reviewed.
+- [x] Database directory established beneath `app.getPath('userData')/database`.
+- [x] Main-process-owned SQLite connection lifecycle implemented.
+- [x] Safe database directory creation and initialization failure handling implemented.
+- [x] SQLite foreign-key enforcement and busy-timeout configuration implemented.
+- [x] Custom versioned migration runner and migration-history table implemented.
+- [x] Transactional migration execution and rollback behavior implemented.
+- [x] Initial infrastructure-only migration implemented; no campaign or feature tables introduced.
+- [x] Database connection shutdown integrated into the Electron application lifecycle.
+- [x] Database infrastructure tests implemented and passing locally.
+- [ ] GitHub Actions test execution and CI validation updates: changes prepared; awaiting push and successful GitHub Actions verification.
 
-## Next session — persistence foundation
+## Next session — secure Electron IPC boundary
 
-### 1. SQLite infrastructure
-
-- [ ] Confirm the Electron app's database module boundaries and TypeScript build configuration.
-- [ ] Audit the Electron app-level package manifest/lockfile arrangement: retain the app manifest needed by Electron Forge, keep the Nx workspace lockfile authoritative, and remove any redundant nested lockfile only after confirming it is not used by a packaging step.
-- [ ] Define the database path under `app.getPath('userData')`, using a dedicated `database/` directory.
-- [ ] Implement a single main-process-owned `better-sqlite3` connection lifecycle.
-- [ ] Create the database directory safely and handle initialization failures explicitly.
-- [ ] Establish conservative SQLite connection defaults, including foreign-key enforcement and a deliberate busy-timeout policy.
-- [ ] Implement a small, versioned migration runner with a migration-history table.
-- [ ] Make each migration transactional where supported and define failure/rollback behavior.
-- [ ] Add an initial infrastructure-only migration; do not add campaign or feature tables until their domain requirements are designed.
-- [ ] Close the database cleanly during application shutdown.
-- [ ] Add unit/integration tests for initialization, migration ordering, repeat startup, migration failure, and connection shutdown.
-- [ ] Evaluate WAL mode in the context of the backup and recovery design before enabling it by default.
-
-### 2. Secure Electron IPC boundary
+### 1. Secure Electron IPC boundary
 
 - [ ] Define a typed, minimal renderer-facing API in the preload layer.
 - [ ] Keep database handles and SQL access exclusively in the main process.
@@ -38,8 +34,9 @@ This file tracks the next engineering tasks for the current foundation phase. It
 - [ ] Validate IPC payloads at the process boundary.
 - [ ] Review sender/origin authorization and error serialization for IPC handlers.
 - [ ] Add tests for valid requests, invalid payloads, unauthorized senders, and error responses.
+- [ ] Define how main-process services access the database without exposing the connection to the renderer.
 
-### 3. Application data and filesystem conventions
+### 2. Application data and filesystem conventions
 
 - [ ] Finalize the application data directory layout beneath Electron's `userData` path.
 - [ ] Define ownership and lifecycle rules for campaign documents, images, and attachments.
@@ -47,15 +44,17 @@ This file tracks the next engineering tasks for the current foundation phase. It
 - [ ] Establish safe file naming, path validation, and deletion/orphan handling rules.
 - [ ] Decide where application preferences live (SQLite or a separate local settings store).
 
-### 4. Backup, recovery, and integrity
+### 3. Backup, recovery, and integrity
 
 - [ ] Choose a backup approach that safely accounts for SQLite transactions and any WAL files.
 - [ ] Define backup naming, retention, and storage location.
 - [ ] Define restore validation and failure-recovery behavior.
 - [ ] Add database integrity checks and tests for backup/restore.
+- [ ] Evaluate WAL mode in the context of the backup and recovery design before enabling it by default.
 
 ## Remaining technical foundation decisions
 
+- [ ] Audit the Electron app-level package manifest/lockfile arrangement: retain the app manifest needed by Electron Forge, keep the Nx workspace lockfile authoritative, and remove any redundant nested lockfile only after confirming it is not used by a packaging step.
 - [ ] Finalize the custom state-management library API and responsibilities before implementing feature state.
 - [ ] Decide the supported operating systems and architectures.
 - [ ] Validate native SQLite rebuild/package behavior on each supported target.
@@ -66,8 +65,8 @@ This file tracks the next engineering tasks for the current foundation phase. It
 
 ## GitHub and project maintenance
 
-- [ ] Add the repository workflows from `.github/workflows/` and verify them on GitHub Actions.
-- [ ] Add lint, unit-test, and production-build checks to CI once their expected baseline is confirmed.
+- [ ] Verify updated GitHub Actions workflows on GitHub after pushing the CI changes.
+- [ ] Ensure formatting, unit tests, and production builds are enforced on pull requests.
 - [ ] Configure branch protection/rulesets for `master` after the checks have run successfully.
 - [ ] Decide release versioning, changelog, and distribution process.
 - [ ] Review supported third-party content licenses before importing or redistributing content.
