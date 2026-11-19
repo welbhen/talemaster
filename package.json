@@ -29,7 +29,6 @@
         "build:dashboard": "nx build dashboard",
         "test": "nx run-many --target=test --all --exclude=talemaster",
         "test:dashboard": "nx test dashboard",
-        "lint": "nx run-many --target=lint --all",
         "lint": "nx run-many --target=lint --all --exclude=talemaster",
         "format": "prettier --write .",
         "format:check": "prettier --check .",
