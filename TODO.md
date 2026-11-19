@@ -22,28 +22,32 @@ This file tracks the next engineering tasks for the current foundation phase. It
 - [x] Initial infrastructure-only migration implemented; no campaign or feature tables introduced.
 - [x] Database connection shutdown integrated into the Electron application lifecycle.
 - [x] Database infrastructure tests implemented and passing locally.
+- [x] Root workspace-wide lint command configured and confirmed working.
+- [x] Root workspace-wide test command configured and confirmed working.
+- [x] Nx recursive root-target invocation issue resolved.
 - [ ] GitHub Actions test execution and CI validation updates: changes prepared; awaiting push and successful GitHub Actions verification.
 
 ## Next session — logging infrastructure
 
 ### 1. Logging library
 
-- [ ] Create a dedicated Nx logging library under `libs/logging`.
-- [ ] Define a small, typed logging API with `LOG`, `WARN`, `DEBUG`, and `ERROR` levels.
-- [ ] Include ISO 8601 timestamps, contextual logger names, messages, and structured metadata.
-- [ ] Implement error serialization, including error names, messages, and stack traces.
+- [x] Generate a dedicated Nx logging library under `libs/logging`.
+- [ ] Define and validate the typed logging API with `LOG`, `WARN`, `DEBUG`, and `ERROR` levels.
+- [ ] Validate ISO 8601 timestamps, contextual logger names, messages, and structured metadata.
+- [ ] Validate error serialization, including error names, messages, causes, and stack traces.
 - [ ] Enable `DEBUG` automatically in development and suppress it in production.
-- [ ] Implement a readable console transport.
-- [ ] Implement persistent JSON Lines file logging.
+- [ ] Validate the readable console transport.
+- [ ] Validate persistent JSON Lines file logging.
 - [ ] Store logs beneath Electron's `app.getPath('userData')/logs` directory.
-- [ ] Implement size-based log rotation: 5 MB maximum per file and five retained files.
+- [ ] Validate size-based log rotation: 5 MB maximum per file and five retained files.
 - [ ] Ensure logging failures never propagate into application operations or cause recursive logging failures.
 - [ ] Initialize logging before SQLite so database initialization failures can be recorded.
 - [ ] Integrate the logger into the Electron main-process lifecycle.
 - [ ] Replace existing application `console.log`, `console.warn`, `console.error`, and related error-reporting calls with the appropriate logger methods.
 - [ ] Keep renderer logging and filesystem access out of scope until the secure IPC boundary is implemented.
-- [ ] Add tests for log levels, timestamps, metadata, error serialization, console output, file persistence, rotation, retention, and failure handling.
+- [ ] Add and execute tests for log levels, timestamps, metadata, error serialization, console output, file persistence, rotation, retention, and failure handling.
 - [ ] Verify development and production logging behavior.
+- [ ] Validate Electron production build and packaging with the logging library.
 
 ### 2. Copyright headers and compliance automation
 
