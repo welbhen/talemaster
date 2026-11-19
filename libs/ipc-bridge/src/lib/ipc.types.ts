@@ -1,4 +1,10 @@
 /**
+ * Copyright 2026 Welberth Marques
+ * github.com/welbhen/talemaster
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+/**
  * Transport-level contracts only.
  *
  * Feature contracts belong to their owning libraries. The Electron

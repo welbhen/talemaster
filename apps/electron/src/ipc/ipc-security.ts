@@ -1,3 +1,9 @@
+/**
+ * Copyright 2026 Welberth Marques
+ * github.com/welbhen/talemaster
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import type { IpcMainEvent, IpcMainInvokeEvent, WebContents, WebFrameMain } from "electron";
 import { BrowserWindow } from "electron";
 

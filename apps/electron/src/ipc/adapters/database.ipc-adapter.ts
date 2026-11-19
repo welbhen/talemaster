@@ -1,3 +1,9 @@
+/**
+ * Copyright 2026 Welberth Marques
+ * github.com/welbhen/talemaster
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import type { IpcMainRegistrar } from "@talemaster/ipc-bridge";
 import type { DatabaseContext } from "@talemaster/database";
 import type { TaleMasterIpcChannels } from "../ipc-contracts";
@@ -17,9 +23,7 @@ function validateDatabaseRequest(value: unknown): void {
 
 export function createDatabaseIpcAdapter(database: DatabaseContext) {
     return {
-        register(
-            registrar: IpcMainRegistrar<TaleMasterIpcChannels>,
-        ): void {
+        register(registrar: IpcMainRegistrar<TaleMasterIpcChannels>): void {
             registrar.handle(IPC_CHANNELS.databaseRequest, (input) => {
                 validateDatabaseRequest(input);
 

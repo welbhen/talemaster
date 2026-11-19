@@ -1,10 +1,14 @@
+/**
+ * Copyright 2026 Welberth Marques
+ * github.com/welbhen/talemaster
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 export interface ElectronRendererLogRequest {
     readonly level: "LOG" | "WARN" | "DEBUG" | "ERROR";
     readonly message: string;
     readonly context?: string;
-    readonly metadata?: Readonly<
-        Record<string, string | number | boolean | null>
-    >;
+    readonly metadata?: Readonly<Record<string, string | number | boolean | null>>;
     readonly error?: {
         readonly name: string;
         readonly message: string;
@@ -23,9 +27,7 @@ declare global {
         readonly electronAPI: {
             readonly platform: string;
             readonly logging: {
-                write(
-                    request: ElectronRendererLogRequest,
-                ): Promise<{ readonly accepted: true }>;
+                write(request: ElectronRendererLogRequest): Promise<{ readonly accepted: true }>;
             };
             readonly database: {
                 health(): Promise<ElectronDatabaseHealth>;

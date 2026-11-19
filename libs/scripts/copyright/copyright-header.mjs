@@ -84,8 +84,10 @@ export function insertHeader(content, header) {
     if (shebangMatch) {
         const shebang = shebangMatch[0];
         const remainder = withoutBom.slice(shebang.length);
+        const normalizedShebang =
+            shebang.endsWith("\n") || shebang.endsWith("\r") ? shebang : `${shebang}${lineEnding}`;
 
-        return `${hasBom ? "\uFEFF" : ""}${shebang}${formattedHeader}${lineEnding}${lineEnding}${remainder}`;
+        return `${hasBom ? "\uFEFF" : ""}${normalizedShebang}${formattedHeader}${lineEnding}${lineEnding}${remainder}`;
     }
 
     return `${hasBom ? "\uFEFF" : ""}${formattedHeader}${lineEnding}${lineEnding}${withoutBom}`;
