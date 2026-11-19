@@ -27,6 +27,8 @@ export const HEADER_BY_EXTENSION = new Map([
     [".html", htmlHeader],
     [".htm", htmlHeader],
     [".svg", htmlHeader],
+    [".cts", blockHeader],
+    [".mts", blockHeader],
 ]);
 
 export const EXCLUDED_PATH_SEGMENTS = new Set([
