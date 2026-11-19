@@ -15,7 +15,11 @@
         "skipDefaultLibCheck": true,
         "strict": true,
         "paths": {
-            "@talemaster/logging": ["./libs/logging/src/index.ts"]
+            "@talemaster/database": ["./libs/database/src/index.ts"],
+            "@talemaster/i18n": ["./libs/i18n/src/index.ts"],
+            "@talemaster/ipc-bridge": ["./libs/ipc-bridge/src/index.ts"],
+            "@talemaster/logging": ["./libs/logging/src/index.ts"],
+            "@talemaster/scripts": ["./libs/scripts/src/index.ts"]
         }
     },
     "exclude": ["node_modules", "tmp"]
