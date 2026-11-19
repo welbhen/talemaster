@@ -1,3 +1,9 @@
+/**
+ * Copyright 2026 Welberth Marques
+ * github.com/welbhen/talemaster
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import { createLogger } from "./logger";
 import type { LogEntry } from "./logger.types";
 import type { LogTransport } from "./transports/log-transport";
