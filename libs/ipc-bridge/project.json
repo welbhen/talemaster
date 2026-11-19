@@ -1,0 +1,19 @@
+{
+    "name": "ipc-bridge",
+    "$schema": "../../node_modules/nx/schemas/project-schema.json",
+    "sourceRoot": "libs/ipc-bridge/src",
+    "projectType": "library",
+    "tags": [],
+    "targets": {
+        "build": {
+            "executor": "@nx/js:tsc",
+            "outputs": ["{options.outputPath}"],
+            "options": {
+                "outputPath": "dist/libs/ipc-bridge",
+                "main": "libs/ipc-bridge/src/index.ts",
+                "tsConfig": "libs/ipc-bridge/tsconfig.lib.json",
+                "assets": ["libs/ipc-bridge/*.md"]
+            }
+        }
+    }
+}

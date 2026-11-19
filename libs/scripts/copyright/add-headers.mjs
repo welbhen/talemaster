@@ -4,23 +4,14 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { execFileSync } from "node:child_process";
 import { readFile, writeFile } from "node:fs/promises";
-
-import { getHeaderForFile, hasHeader, insertHeader, isEligibleFile } from "./copyright-header.mjs";
+import { projectFiles } from "./get-tracked-files.mjs";
+import { getHeaderForFile, hasHeader, insertHeader } from "./copyright-header.mjs";
 
 const dryRun = process.argv.includes("--dry-run");
 
-function getTrackedFiles() {
-    const output = execFileSync("git", ["ls-files", "-z"], {
-        encoding: "utf8",
-    });
-
-    return output.split("\0").filter(Boolean);
-}
-
 async function main() {
-    const files = getTrackedFiles().filter(isEligibleFile);
+    const files = projectFiles;
 
     let updated = 0;
     let skipped = 0;

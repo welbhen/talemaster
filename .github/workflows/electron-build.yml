@@ -34,7 +34,7 @@ jobs:
         run: npm ci
 
       - name: Run tests
-        run: npx nx run-many --target=test --all
+        run: npm run test
 
   build:
     name: Build renderer and Electron application

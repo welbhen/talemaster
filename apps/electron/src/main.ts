@@ -7,8 +7,8 @@
 import { app, BrowserWindow } from "electron";
 import { join } from "node:path";
 
-import { closeDatabase, initializeDatabase } from "./database/db";
-import type { DatabaseContext } from "./database/db.types";
+import { closeDatabase, initializeDatabase } from "@talemaster/database";
+import type { DatabaseContext } from "@talemaster/database";
 import { createApplicationLogger } from "@talemaster/logging";
 import type { Logger } from "@talemaster/logging";
 

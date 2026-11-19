@@ -25,33 +25,41 @@ This file tracks the next engineering tasks for the current foundation phase. It
 - [x] Root workspace-wide lint command configured and confirmed working.
 - [x] Root workspace-wide test command configured and confirmed working.
 - [x] Nx recursive root-target invocation issue resolved.
+- [x] Dedicated logging library implemented under `libs/logging`.
+- [x] Structured logging, console and rotating JSON Lines file transports implemented.
+- [x] Logging integrated into the Electron main-process lifecycle.
+- [x] Renderer logging integrated through the secure IPC boundary.
+- [x] Logging and IPC tests implemented and confirmed passing locally.
+- [x] Secure Electron IPC architecture and application integration completed.
+- [x] Copyright header configuration and automation implemented.
+- [x] Copyright headers applied and compliance validation tested successfully.
 - [ ] GitHub Actions test execution and CI validation updates: changes prepared; awaiting push and successful GitHub Actions verification.
+- [ ] Validate Electron production build and packaging with the integrated logging and IPC infrastructure.
 
-## Next session — logging infrastructure
+## Completed foundation work
 
-### 1. Logging library
+### 1. Logging infrastructure
 
 - [x] Generate a dedicated Nx logging library under `libs/logging`.
-- [ ] Define and validate the typed logging API with `LOG`, `WARN`, `DEBUG`, and `ERROR` levels.
-- [ ] Validate ISO 8601 timestamps, contextual logger names, messages, and structured metadata.
-- [ ] Validate error serialization, including error names, messages, causes, and stack traces.
-- [ ] Enable `DEBUG` automatically in development and suppress it in production.
-- [ ] Validate the readable console transport.
-- [ ] Validate persistent JSON Lines file logging.
-- [ ] Store logs beneath Electron's `app.getPath('userData')/logs` directory.
-- [ ] Validate size-based log rotation: 5 MB maximum per file and five retained files.
-- [ ] Ensure logging failures never propagate into application operations or cause recursive logging failures.
-- [ ] Initialize logging before SQLite so database initialization failures can be recorded.
-- [ ] Integrate the logger into the Electron main-process lifecycle.
-- [ ] Replace existing application `console.log`, `console.warn`, `console.error`, and related error-reporting calls with the appropriate logger methods.
-- [ ] Keep renderer logging and filesystem access out of scope until the secure IPC boundary is implemented.
-- [ ] Add and execute tests for log levels, timestamps, metadata, error serialization, console output, file persistence, rotation, retention, and failure handling.
-- [ ] Verify development and production logging behavior.
-- [ ] Validate Electron production build and packaging with the logging library.
+- [x] Define the typed logging API with `LOG`, `WARN`, `DEBUG`, and `ERROR` levels.
+- [x] Implement ISO 8601 timestamps, contextual logger names, messages, and structured metadata.
+- [x] Implement error serialization, including error names, messages, causes, and stack traces.
+- [x] Enable `DEBUG` automatically in development and suppress it in production.
+- [x] Implement the readable console transport.
+- [x] Implement persistent JSON Lines file logging.
+- [x] Store logs beneath Electron's `app.getPath('userData')/logs` directory.
+- [x] Implement size-based log rotation: 5 MB maximum per file and five retained files.
+- [x] Ensure logging failures never propagate into application operations or cause recursive logging failures.
+- [x] Initialize logging before SQLite so database initialization failures can be recorded.
+- [x] Integrate the logger into the Electron main-process lifecycle.
+- [x] Replace existing application-level console logging with the appropriate logger methods.
+- [x] Implement renderer logging through the secure IPC boundary.
+- [x] Add and execute tests for log levels, timestamps, metadata, error serialization, console output, file persistence, rotation, retention, and failure handling.
+- [x] Verify development and production logging behavior.
 
 ### 2. Copyright headers and compliance automation
 
-- [ ] Establish the project copyright header:
+- [x] Establish the project copyright header:
 
     ```text
     /**
@@ -61,32 +69,35 @@ This file tracks the next engineering tasks for the current foundation phase. It
      */
     ```
 
-- [ ] Define comment syntax for each supported source-file type while preserving the exact header text.
-- [ ] Include project-owned source files, tests, and configuration source files.
-- [ ] Exclude JSON, YAML, Markdown, lockfiles, generated files, dependencies, build outputs, and binary files.
-- [ ] Implement a shared copyright-header configuration.
-- [ ] Create a script to add missing headers to existing Git-tracked source files.
-- [ ] Support dry-run mode and prevent duplicate headers.
-- [ ] Preserve existing file contents, line endings, BOMs, and shebangs.
-- [ ] Create a copyright validation script that exits unsuccessfully when eligible files have missing or invalid headers.
-- [ ] Apply headers to existing eligible source files and review the resulting changes.
-- [ ] Add `copyright:add` and `copyright:check` npm scripts.
-- [ ] Integrate `copyright:check` into GitHub Actions pull-request validation.
-- [ ] Add tests for header insertion, validation, exclusions, and special file handling.
+- [x] Define comment syntax for each supported source-file type while preserving the exact header text.
+- [x] Include project-owned source files, tests, and configuration source files.
+- [x] Exclude JSON, YAML, Markdown, lockfiles, generated files, dependencies, build outputs, and binary files.
+- [x] Implement a shared copyright-header configuration.
+- [x] Create a script to add missing headers to project source files.
+- [x] Support dry-run mode and prevent duplicate headers.
+- [x] Preserve existing file contents, line endings, BOMs, and shebangs.
+- [x] Create a copyright validation script that exits unsuccessfully when eligible files have missing or invalid headers.
+- [x] Apply headers to existing eligible source files and review the resulting changes.
+- [x] Add `copyright:add` and `copyright:check` npm scripts.
+- [x] Integrate `copyright:check` into GitHub Actions pull-request validation.
+- [x] Add and execute tests for header insertion, validation, exclusions, and special file handling.
+- [x] Validate untracked, staged, ignored, and deleted file handling during file discovery.
+
+### 3. Secure Electron IPC boundary
+
+- [x] Define a typed, minimal renderer-facing API in the preload layer.
+- [x] Keep database handles and SQL access exclusively in the main process.
+- [x] Define explicit IPC channel names and handlers; do not expose generic `send`, `invoke`, filesystem, or SQL execution capabilities.
+- [x] Validate IPC payloads at the process boundary.
+- [x] Review sender/origin authorization and error serialization for IPC handlers.
+- [x] Add and execute tests for valid requests, invalid payloads, unauthorized senders, and error responses.
+- [x] Define how main-process services access the database without exposing the connection to the renderer.
+- [x] Integrate the IPC registration and adapters into the Electron application lifecycle.
+- [x] Integrate renderer logging through the explicit preload API.
 
 ## Remaining technical foundation work
 
-### 1. Secure Electron IPC boundary
-
-- [ ] Define a typed, minimal renderer-facing API in the preload layer.
-- [ ] Keep database handles and SQL access exclusively in the main process.
-- [ ] Define explicit IPC channel names and handlers; do not expose generic `send`, `invoke`, filesystem, or SQL execution capabilities.
-- [ ] Validate IPC payloads at the process boundary.
-- [ ] Review sender/origin authorization and error serialization for IPC handlers.
-- [ ] Add tests for valid requests, invalid payloads, unauthorized senders, and error responses.
-- [ ] Define how main-process services access the database without exposing the connection to the renderer.
-
-### 2. Application data and filesystem conventions
+### 1. Application data and filesystem conventions
 
 - [ ] Finalize the application data directory layout beneath Electron's `userData` path.
 - [ ] Define ownership and lifecycle rules for campaign documents, images, and attachments.
@@ -94,7 +105,7 @@ This file tracks the next engineering tasks for the current foundation phase. It
 - [ ] Establish safe file naming, path validation, and deletion/orphan handling rules.
 - [ ] Decide where application preferences live (SQLite or a separate local settings store).
 
-### 3. Backup, recovery, and integrity
+### 2. Backup, recovery, and integrity
 
 - [ ] Choose a backup approach that safely accounts for SQLite transactions and any WAL files.
 - [ ] Define backup naming, retention, and storage location.
