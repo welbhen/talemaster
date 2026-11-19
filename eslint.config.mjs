@@ -1,3 +1,9 @@
+/**
+ * Copyright 2026 Welberth Marques
+ * github.com/welbhen/talemaster
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import nx from "@nx/eslint-plugin";
 
 export default [
@@ -24,6 +30,7 @@ export default [
                 },
             ],
             "@typescript-eslint/no-explicit-any": "warn",
+            "@typescript-eslint/no-empty-function": "off",
         },
     },
     {

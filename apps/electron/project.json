@@ -79,7 +79,7 @@
         },
         "test": {
             "options": {
-                "passWithNoTests": true
+                "passWithNoTests": false
             }
         },
         "assemble": {

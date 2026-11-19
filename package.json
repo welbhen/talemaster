@@ -25,12 +25,14 @@
     "type": "commonjs",
     "scripts": {
         "nx": "nx",
-        "start": "nx serve dashboard",
-        "build": "nx build dashboard",
-        "test": "nx test dashboard",
-        "lint": "nx lint dashboard",
+        "start:dashboard": "nx serve dashboard",
+        "build:dashboard": "nx build dashboard",
+        "test:dashboard": "nx test dashboard",
+        "lint:dashboard": "nx lint dashboard",
         "format": "prettier --write .",
-        "format:check": "prettier --check ."
+        "format:check": "prettier --check .",
+        "copyright:add": "node libs/scripts/copyright/add-headers.mjs",
+        "copyright:check": "node libs/scripts/copyright/check-headers.mjs"
     },
     "devDependencies": {
         "@angular-devkit/core": "~22.2.0",
@@ -60,6 +62,7 @@
         "@playwright/test": "^1.37.0",
         "@schematics/angular": "~22.2.0",
         "@swc/helpers": "~0.5.18",
+        "@types/better-sqlite3": "^9.6.0",
         "@types/jest": "~30.0.0",
         "@types/node": "^22.0.0",
         "@typescript-eslint/utils": "^8.58.0",
