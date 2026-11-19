@@ -9,9 +9,11 @@ import { join } from "node:path";
 
 import { closeDatabase, initializeDatabase } from "./database/db";
 import type { DatabaseContext } from "./database/db.types";
+import { createApplicationLogger } from "@talemaster/logging";
+import type { Logger } from "@talemaster/logging";
 
 const isDevelopment = !app.isPackaged;
-
+let logger: Logger | undefined;
 let databaseContext: DatabaseContext | undefined;
 
 function createWindow(): void {
@@ -44,13 +46,25 @@ app.on("before-quit", () => {
         closeDatabase(databaseContext);
         databaseContext = undefined;
     } catch (error) {
-        console.error("Failed to close the database:", error);
+        if (logger) {
+            logger.error("Failed to close the database", error);
+        } else {
+            console.error("Failed to close the database:", error);
+        }
     }
 });
 
 void app
     .whenReady()
     .then(() => {
+        logger = createApplicationLogger(
+            {
+                directory: join(app.getPath("userData"), "logs"),
+                isDevelopment,
+            },
+            "Application",
+        );
+
         databaseContext = initializeDatabase({
             directory: join(app.getPath("userData"), "database"),
         });
@@ -64,7 +78,12 @@ void app
         });
     })
     .catch((error: unknown) => {
-        console.error("Failed to initialize the application:", error);
+        if (logger) {
+            logger.error("Failed to initialize the application", error);
+        } else {
+            console.error("Failed to initialize the application:", error);
+        }
+
         app.quit();
     });
 
