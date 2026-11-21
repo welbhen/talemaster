@@ -80,8 +80,12 @@ async function collectFiles(
 
         const path = toManifestPath(relative(rootDirectory, absolutePath));
 
-        if (!path || path === BACKUP_MANIFEST_FILENAME) {
-            throw new Error(`Backup source contains a reserved or invalid path: ${path}`);
+        if (path === BACKUP_MANIFEST_FILENAME) {
+            continue;
+        }
+
+        if (!path) {
+            throw new Error("Backup source contains an invalid file path.");
         }
 
         files.push({
