@@ -78,7 +78,7 @@ describe("backup manifest", () => {
                     isSymbolicLink: () => true,
                     isDirectory: () => false,
                     isFile: () => false,
-                } as Awaited<ReturnType<typeof fsPromises.lstat>>;
+                } as unknown as Awaited<ReturnType<typeof fsPromises.lstat>>;
             }
 
             return realLstat(path, ...args);
