@@ -198,7 +198,7 @@ describe("backup manifest", () => {
         });
 
         expect(result.valid).toBe(false);
-        expect(result.errors).toContain("Backup file size mismatch: content.txt");
+        expect(result.errors).toContain("Backup file checksum mismatch: content.txt");
         expect(result.errors).toContain("Unexpected backup file: extra.txt");
     });
 
