@@ -157,4 +157,85 @@ describe("backup manifest", () => {
             }),
         ).toThrow("A backup file entry contains invalid or unsafe metadata.");
     });
+
+    it("verifies a backup directory and ignores its manifest file", async () => {
+        const { writeFile: write } = await import("node:fs/promises");
+        const { verifyBackupDirectory } = await import("./backup-manifest");
+
+        await writeFile(join(directory, "content.txt"), "original");
+        const manifest = await createBackupManifest({
+            sourceDirectory: directory,
+            type: "full",
+            applicationVersion: "1.0.0",
+        });
+        await writeFile(
+            join(directory, "manifest.json"),
+            JSON.stringify(manifest),
+            "utf8",
+        );
+
+        await expect(
+            verifyBackupDirectory({ sourceDirectory: directory, manifest }),
+        ).resolves.toEqual({ valid: true, errors: [] });
+    });
+
+    it("detects modified and unexpected files", async () => {
+        const { verifyBackupDirectory } = await import("./backup-manifest");
+
+        await writeFile(join(directory, "content.txt"), "original");
+        const manifest = await createBackupManifest({
+            sourceDirectory: directory,
+            type: "full",
+            applicationVersion: "1.0.0",
+        });
+
+        await writeFile(join(directory, "content.txt"), "modified");
+        await writeFile(join(directory, "extra.txt"), "unexpected");
+
+        const result = await verifyBackupDirectory({
+            sourceDirectory: directory,
+            manifest,
+        });
+
+        expect(result.valid).toBe(false);
+        expect(result.errors).toContain("Backup file size mismatch: content.txt");
+        expect(result.errors).toContain("Unexpected backup file: extra.txt");
+    });
+
+    it("detects missing files and checksum mismatches", async () => {
+        const { verifyBackupDirectory } = await import("./backup-manifest");
+
+        await writeFile(join(directory, "content.txt"), "original");
+        const manifest = await createBackupManifest({
+            sourceDirectory: directory,
+            type: "full",
+            applicationVersion: "1.0.0",
+        });
+
+        await rm(join(directory, "content.txt"));
+        await writeFile(join(directory, "content.txt"), "tampered");
+
+        const result = await verifyBackupDirectory({
+            sourceDirectory: directory,
+            manifest,
+        });
+
+        expect(result.valid).toBe(false);
+        expect(result.errors).toContain("Backup file checksum mismatch: content.txt");
+    });
+
+    it("reports invalid untrusted manifests without reading backup files", async () => {
+        const { verifyBackupDirectory } = await import("./backup-manifest");
+
+        const result = await verifyBackupDirectory({
+            sourceDirectory: directory,
+            manifest: { formatVersion: 999 },
+        });
+
+        expect(result).toEqual({
+            valid: false,
+            errors: ["The backup format version is not supported."],
+        });
+    });
+
 });
