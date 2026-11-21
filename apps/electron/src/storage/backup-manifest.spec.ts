@@ -4,7 +4,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { mkdtemp, mkdir, rm, symlink, writeFile } from "node:fs/promises";
+import { mkdtemp, mkdir, rm, writeFile } from "node:fs/promises";
+import * as fsPromises from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
@@ -23,6 +24,7 @@ describe("backup manifest", () => {
     });
 
     afterEach(async () => {
+        jest.restoreAllMocks();
         await rm(directory, { recursive: true, force: true });
     });
 
@@ -63,10 +65,24 @@ describe("backup manifest", () => {
         ).rejects.toThrow("A campaign ID is required for a campaign backup.");
     });
 
-    it("rejects symbolic links in the source tree", async () => {
+    it("rejects symbolic links in the source tree without requiring OS symlink privileges", async () => {
         const target = join(directory, "target.txt");
+        const link = join(directory, "link.txt");
         await writeFile(target, "content");
-        await symlink(target, join(directory, "link.txt"));
+        await writeFile(link, "link placeholder");
+
+        const realLstat = fsPromises.lstat.bind(fsPromises);
+        jest.spyOn(fsPromises, "lstat").mockImplementation(async (path, ...args) => {
+            if (String(path) === link) {
+                return {
+                    isSymbolicLink: () => true,
+                    isDirectory: () => false,
+                    isFile: () => false,
+                } as Awaited<ReturnType<typeof fsPromises.lstat>>;
+            }
+
+            return realLstat(path, ...args);
+        });
 
         await expect(
             createBackupManifest({
