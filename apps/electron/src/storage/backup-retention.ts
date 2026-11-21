@@ -5,7 +5,7 @@
  */
 
 import { lstat, readdir, rm } from "node:fs/promises";
-import { join } from "node:path";
+import { dirname, join, resolve } from "node:path";
 
 import { verifyBackupArchive } from "./backup-archive";
 
@@ -32,8 +32,12 @@ export async function applyBackupRetention(
         throw new Error("Backup retention must be a positive safe integer.");
     }
 
-    const backupDirectory = options.backupDirectory;
-    const newlyCreatedArchive = options.newlyCreatedArchive;
+    const backupDirectory = resolve(options.backupDirectory);
+    const newlyCreatedArchive = resolve(options.newlyCreatedArchive);
+
+    if (dirname(newlyCreatedArchive) !== backupDirectory) {
+        throw new Error("The newly created backup must be inside its retention directory.");
+    }
 
     const rootMetadata = await lstat(backupDirectory);
 
