@@ -22,7 +22,7 @@ describe("applyBackupRetention", () => {
         await rm(directory, { recursive: true, force: true });
     });
 
-    async function createArchive(name: string, createdAt: string, type: "full" | "campaign" = "full") {
+    async function createArchive(name: string, type: "full" | "campaign" = "full") {
         const source = join(directory, `source-${name}`);
         const archive = join(directory, `${name}.zip`);
         await mkdir(source);
@@ -40,7 +40,7 @@ describe("applyBackupRetention", () => {
     }
 
     it("does not delete older backups until the newly created backup is verified", async () => {
-        const first = await createArchive("first", "2026-01-01T00:00:00.000Z");
+        const first = await createArchive("first");
         const invalid = join(directory, "invalid.zip");
         await writeFile(invalid, "not a zip");
 
@@ -58,7 +58,7 @@ describe("applyBackupRetention", () => {
     });
 
     it("rejects invalid retention counts", async () => {
-        const archive = await createArchive("new", "2026-01-01T00:00:00.000Z");
+        const archive = await createArchive("new");
 
         await expect(
             applyBackupRetention({
@@ -70,8 +70,8 @@ describe("applyBackupRetention", () => {
     });
 
     it("keeps backup scopes separate", async () => {
-        const full = await createArchive("full", "2026-01-01T00:00:00.000Z", "full");
-        const campaign = await createArchive("campaign", "2026-01-01T00:00:00.000Z", "campaign");
+        const full = await createArchive("full", "full");
+        const campaign = await createArchive("campaign", "campaign");
 
         await applyBackupRetention({
             backupDirectory: directory,
