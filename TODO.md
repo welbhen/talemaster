@@ -13,7 +13,7 @@ This file tracks the next engineering tasks for the current foundation phase. It
 - [x] Nx root lockfile pruning issue resolved; Electron package target completed without the earlier warning.
 - [x] Shared visual-identity and localization resource foundations established.
 - [x] Electron database module boundaries and TypeScript build configuration reviewed.
-- [x] Database directory established beneath `app.getPath('userData')/database`.
+- [x] Database directory established beneath `app.getPath('userData')/talemaster/database`.
 - [x] Main-process-owned SQLite connection lifecycle implemented.
 - [x] Safe database directory creation and initialization failure handling implemented.
 - [x] SQLite foreign-key enforcement and busy-timeout configuration implemented.
@@ -47,7 +47,7 @@ This file tracks the next engineering tasks for the current foundation phase. It
 - [x] Enable `DEBUG` automatically in development and suppress it in production.
 - [x] Implement the readable console transport.
 - [x] Implement persistent JSON Lines file logging.
-- [x] Store logs beneath Electron's `app.getPath('userData')/logs` directory.
+- [x] Store logs beneath Electron's `app.getPath('userData')/talemaster/logs` directory.
 - [x] Implement size-based log rotation: 5 MB maximum per file and five retained files.
 - [x] Ensure logging failures never propagate into application operations or cause recursive logging failures.
 - [x] Initialize logging before SQLite so database initialization failures can be recorded.
