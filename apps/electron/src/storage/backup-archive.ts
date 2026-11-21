@@ -17,6 +17,7 @@ import {
     BACKUP_MANIFEST_FILENAME,
     createBackupManifest,
     parseBackupManifest,
+    verifyBackupDirectory,
     type BackupManifest,
 } from "./backup-manifest";
 
@@ -234,8 +235,6 @@ export async function createBackupArchive(
         await zipWriter.close();
         await finished(output);
         await archiveHandle.sync();
-        completed = true;
-
         const verification = await verifyBackupArchive({ archivePath });
 
         if (!verification.valid) {
@@ -244,6 +243,7 @@ export async function createBackupArchive(
             );
         }
 
+        completed = true;
         return manifest;
     } finally {
         if (!output.destroyed) {
@@ -416,6 +416,17 @@ export async function extractBackupArchive(
                 flag: "wx",
             }),
         );
+
+        const extractedVerification = await verifyBackupDirectory({
+            sourceDirectory: destinationDirectory,
+            manifest: verification.manifest,
+        });
+
+        if (!extractedVerification.valid) {
+            throw new Error(
+                `Extracted backup failed integrity verification: ${extractedVerification.errors.join("; ")}`,
+            );
+        }
 
         return verification.manifest;
     } catch (error) {
