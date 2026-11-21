@@ -156,9 +156,12 @@ async function readManifest(
     return parseBackupManifest(value);
 }
 
-async function hashArchiveEntry(entry: {
-    getData(writer: WritableStream<Uint8Array>): Promise<unknown>;
-}): Promise<{ sha256: string; size: number }> {
+async function hashArchiveEntry(
+    entry: {
+        getData(writer: WritableStream<Uint8Array>): Promise<unknown>;
+    },
+    maxBytes: number,
+): Promise<{ sha256: string; size: number }> {
     const hash = createHash("sha256");
     let size = 0;
 
@@ -166,6 +169,11 @@ async function hashArchiveEntry(entry: {
         new WritableStream<Uint8Array>({
             write(chunk) {
                 size += chunk.byteLength;
+
+                if (size > maxBytes) {
+                    throw new Error("A backup archive entry exceeded its actual decompressed size limit.");
+                }
+
                 hash.update(chunk);
             },
         }),
@@ -329,7 +337,7 @@ export async function verifyBackupArchive(
                 continue;
             }
 
-            const actual = await hashArchiveEntry(entry);
+            const actual = await hashArchiveEntry(entry, limits.maxFileBytes);
 
             if (actual.size !== expected.size) {
                 errors.push(`Backup archive entry expanded size mismatch: ${entry.filename}`);
