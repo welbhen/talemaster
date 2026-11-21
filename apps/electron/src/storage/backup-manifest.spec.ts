@@ -11,6 +11,7 @@ import { join } from "node:path";
 import {
     createBackupManifest,
     parseBackupManifest,
+    verifyBackupDirectory,
     type BackupManifest,
 } from "./backup-manifest";
 
@@ -159,9 +160,6 @@ describe("backup manifest", () => {
     });
 
     it("verifies a backup directory and ignores its manifest file", async () => {
-        const { writeFile: write } = await import("node:fs/promises");
-        const { verifyBackupDirectory } = await import("./backup-manifest");
-
         await writeFile(join(directory, "content.txt"), "original");
         const manifest = await createBackupManifest({
             sourceDirectory: directory,
@@ -180,8 +178,6 @@ describe("backup manifest", () => {
     });
 
     it("detects modified and unexpected files", async () => {
-        const { verifyBackupDirectory } = await import("./backup-manifest");
-
         await writeFile(join(directory, "content.txt"), "original");
         const manifest = await createBackupManifest({
             sourceDirectory: directory,
@@ -213,7 +209,6 @@ describe("backup manifest", () => {
         });
 
         await rm(join(directory, "content.txt"));
-        await writeFile(join(directory, "content.txt"), "tampered");
 
         const result = await verifyBackupDirectory({
             sourceDirectory: directory,
@@ -221,7 +216,7 @@ describe("backup manifest", () => {
         });
 
         expect(result.valid).toBe(false);
-        expect(result.errors).toContain("Backup file checksum mismatch: content.txt");
+        expect(result.errors).toContain("Missing backup file: content.txt");
     });
 
     it("reports invalid untrusted manifests without reading backup files", async () => {
