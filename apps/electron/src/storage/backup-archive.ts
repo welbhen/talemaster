@@ -6,7 +6,7 @@
 
 import { BlobReader, TextReader, TextWriter, ZipReader, ZipWriter } from "@zip.js/zip.js";
 import { createReadStream, createWriteStream } from "node:fs";
-import { mkdir, open, lstat, rm } from "node:fs/promises";
+import { mkdir, open, lstat, rm, writeFile } from "node:fs/promises";
 import { openAsBlob } from "node:fs";
 import { createHash } from "node:crypto";
 import { dirname, isAbsolute, relative, resolve, sep, win32 } from "node:path";
@@ -181,7 +181,7 @@ async function openArchive(archivePath: string): Promise<ZipReader<unknown>> {
         throw new Error("The backup archive must be a regular file.");
     }
 
-    return new ZipReader(new BlobReader(await openAsBlob(archivePath)));
+    return new ZipReader(new BlobReader(await openAsBlob(archivePath)), { useWebWorkers: false });
 }
 
 /**
@@ -215,7 +215,10 @@ export async function createBackupArchive(
 
     const archiveHandle = await open(archivePath, "wx");
     const output = archiveHandle.createWriteStream({ autoClose: false });
-    const zipWriter = new ZipWriter(Writable.toWeb(output) as WritableStream<Uint8Array>);
+    const zipWriter = new ZipWriter(
+        Writable.toWeb(output) as WritableStream<Uint8Array>,
+        { useWebWorkers: false },
+    );
     let completed = false;
 
     try {
@@ -410,12 +413,10 @@ export async function extractBackupArchive(
             destinationDirectory,
             BACKUP_MANIFEST_FILENAME,
         );
-        await import("node:fs/promises").then(({ writeFile }) =>
-            writeFile(manifestPath, JSON.stringify(verification.manifest, null, 2), {
-                encoding: "utf8",
-                flag: "wx",
-            }),
-        );
+        await writeFile(manifestPath, JSON.stringify(verification.manifest, null, 2), {
+            encoding: "utf8",
+            flag: "wx",
+        });
 
         const extractedVerification = await verifyBackupDirectory({
             sourceDirectory: destinationDirectory,
