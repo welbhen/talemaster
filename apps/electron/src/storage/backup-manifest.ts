@@ -243,3 +243,82 @@ export function parseBackupManifest(value: unknown): BackupManifest {
         files,
     };
 }
+
+export interface VerifyBackupOptions {
+    readonly sourceDirectory: string;
+    readonly manifest: unknown;
+}
+
+export interface BackupVerificationResult {
+    readonly valid: boolean;
+    readonly errors: readonly string[];
+}
+
+/**
+ * Verifies that a backup directory exactly matches its untrusted manifest.
+ * Checks file inventory, file sizes, SHA-256 hashes, and symbolic links.
+ */
+export async function verifyBackupDirectory(
+    options: VerifyBackupOptions,
+): Promise<BackupVerificationResult> {
+    let manifest: BackupManifest;
+
+    try {
+        manifest = parseBackupManifest(options.manifest);
+    } catch (error) {
+        return {
+            valid: false,
+            errors: [error instanceof Error ? error.message : "The backup manifest is invalid."],
+        };
+    }
+
+    let actualFiles: BackupFileEntry[];
+
+    try {
+        const rootMetadata = await lstat(options.sourceDirectory);
+
+        if (!rootMetadata.isDirectory() || rootMetadata.isSymbolicLink()) {
+            throw new Error("The backup source must be a real directory.");
+        }
+
+        actualFiles = await collectFiles(options.sourceDirectory, options.sourceDirectory);
+    } catch (error) {
+        return {
+            valid: false,
+            errors: [error instanceof Error ? error.message : "The backup directory could not be read."],
+        };
+    }
+
+    const expectedByPath = new Map(manifest.files.map((file) => [file.path, file]));
+    const actualByPath = new Map(actualFiles.map((file) => [file.path, file]));
+    const errors: string[] = [];
+
+    for (const expected of manifest.files) {
+        const actual = actualByPath.get(expected.path);
+
+        if (!actual) {
+            errors.push(`Missing backup file: ${expected.path}`);
+            continue;
+        }
+
+        if (actual.size !== expected.size) {
+            errors.push(`Backup file size mismatch: ${expected.path}`);
+            continue;
+        }
+
+        if (actual.sha256 !== expected.sha256) {
+            errors.push(`Backup file checksum mismatch: ${expected.path}`);
+        }
+    }
+
+    for (const actual of actualFiles) {
+        if (!expectedByPath.has(actual.path)) {
+            errors.push(`Unexpected backup file: ${actual.path}`);
+        }
+    }
+
+    return {
+        valid: errors.length === 0,
+        errors,
+    };
+}
