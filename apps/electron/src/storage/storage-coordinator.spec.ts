@@ -101,21 +101,16 @@ describe("StorageCoordinator", () => {
         await coordinator.runMutation(() => events.push("mutation-2"));
         await coordinator.createSnapshot(() => events.push("snapshot-2"));
 
-        expect(events).toEqual([
-            "mutation-1",
-            "snapshot-1",
-            "mutation-2",
-            "snapshot-2",
-        ]);
+        expect(events).toEqual(["mutation-1", "snapshot-1", "mutation-2", "snapshot-2"]);
     });
 
     it("releases the barrier when a mutation rejects", async () => {
         const coordinator = createStorageCoordinator();
         const expectedError = new Error("mutation failed");
 
-        await expect(
-            coordinator.runMutation(() => Promise.reject(expectedError)),
-        ).rejects.toBe(expectedError);
+        await expect(coordinator.runMutation(() => Promise.reject(expectedError))).rejects.toBe(
+            expectedError,
+        );
 
         await expect(coordinator.createSnapshot(() => "snapshot completed")).resolves.toBe(
             "snapshot completed",
@@ -126,9 +121,9 @@ describe("StorageCoordinator", () => {
         const coordinator = createStorageCoordinator();
         const expectedError = new Error("snapshot failed");
 
-        await expect(
-            coordinator.createSnapshot(() => Promise.reject(expectedError)),
-        ).rejects.toBe(expectedError);
+        await expect(coordinator.createSnapshot(() => Promise.reject(expectedError))).rejects.toBe(
+            expectedError,
+        );
 
         await expect(coordinator.runMutation(() => "mutation completed")).resolves.toBe(
             "mutation completed",

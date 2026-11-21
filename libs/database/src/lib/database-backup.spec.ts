@@ -20,7 +20,9 @@ describe("createDatabaseBackup", () => {
     beforeEach(() => {
         directory = mkdtempSync(join(tmpdir(), "talemaster-db-backup-"));
         context = initializeDatabase({ directory: join(directory, "source") });
-        context.connection.exec("CREATE TABLE backup_test (id INTEGER PRIMARY KEY, value TEXT NOT NULL)");
+        context.connection.exec(
+            "CREATE TABLE backup_test (id INTEGER PRIMARY KEY, value TEXT NOT NULL)",
+        );
         context.connection.prepare("INSERT INTO backup_test (value) VALUES (?)").run("snapshot");
     });
 
@@ -38,7 +40,9 @@ describe("createDatabaseBackup", () => {
 
         const snapshot = new Database(destination, { readonly: true, fileMustExist: true });
         try {
-            expect(snapshot.prepare("SELECT value FROM backup_test").pluck().get()).toBe("snapshot");
+            expect(snapshot.prepare("SELECT value FROM backup_test").pluck().get()).toBe(
+                "snapshot",
+            );
             expect(snapshot.pragma("integrity_check", { simple: true })).toBe("ok");
         } finally {
             snapshot.close();

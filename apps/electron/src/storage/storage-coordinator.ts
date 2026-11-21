@@ -86,10 +86,7 @@ export function createStorageCoordinator(): StorageCoordinator {
         }
     }
 
-    function enqueue<T>(
-        kind: StorageRequest["kind"],
-        operation: Operation<T>,
-    ): Promise<T> {
+    function enqueue<T>(kind: StorageRequest["kind"], operation: Operation<T>): Promise<T> {
         return new Promise<T>((resolve, reject) => {
             const request = {
                 kind,
