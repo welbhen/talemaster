@@ -16,6 +16,10 @@ const isDevelopment = !app.isPackaged;
 let logger: Logger | undefined;
 let databaseContext: DatabaseContext | undefined;
 
+function getRootDir(): string {
+    return app.getPath("userData") + "talemaster/";
+}
+
 function createWindow(): void {
     const mainWindow = new BrowserWindow({
         width: 1440,
@@ -59,14 +63,14 @@ void app
     .then(() => {
         logger = createApplicationLogger(
             {
-                directory: join(app.getPath("userData"), "logs"),
+                directory: join(getRootDir(), "logs"),
                 isDevelopment,
             },
             "Application",
         );
 
         databaseContext = initializeDatabase({
-            directory: join(app.getPath("userData"), "database"),
+            directory: join(getRootDir(), "database"),
         });
 
         createWindow();

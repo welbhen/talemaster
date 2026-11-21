@@ -120,7 +120,7 @@ The application follows these security principles:
 
 The local machine is the authoritative source of application data.
 
-The database resides beneath Electron's `app.getPath('userData')` directory, rather than the application installation directory.
+The database resides beneath Electron's `app.getPath('userData')/talemaster` directory, rather than the application installation directory.
 
 The current database infrastructure includes:
 
