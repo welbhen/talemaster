@@ -6,17 +6,17 @@
 
 type Operation<T> = () => T | Promise<T>;
 
-interface MutationRequest<T = unknown> {
+interface MutationRequest {
     readonly kind: "mutation";
-    readonly operation: Operation<T>;
-    readonly resolve: (value: T | PromiseLike<T>) => void;
+    readonly operation: Operation<unknown>;
+    readonly resolve: (value: unknown) => void;
     readonly reject: (reason?: unknown) => void;
 }
 
-interface SnapshotRequest<T = unknown> {
+interface SnapshotRequest {
     readonly kind: "snapshot";
-    readonly operation: Operation<T>;
-    readonly resolve: (value: T | PromiseLike<T>) => void;
+    readonly operation: Operation<unknown>;
+    readonly resolve: (value: unknown) => void;
     readonly reject: (reason?: unknown) => void;
 }
 
@@ -91,22 +91,14 @@ export function createStorageCoordinator(): StorageCoordinator {
         operation: Operation<T>,
     ): Promise<T> {
         return new Promise<T>((resolve, reject) => {
-            if (kind === "mutation") {
-                queue.push({
-                    kind,
-                    operation,
-                    resolve,
-                    reject,
-                });
-            } else {
-                queue.push({
-                    kind,
-                    operation,
-                    resolve,
-                    reject,
-                });
-            }
+            const request = {
+                kind,
+                operation,
+                resolve: (value: unknown) => resolve(value as T),
+                reject,
+            };
 
+            queue.push(request as StorageRequest);
             pump();
         });
     }
