@@ -77,9 +77,8 @@ describe("backup manifest", () => {
         await writeFile(target, "content");
         await writeFile(link, "link placeholder");
 
-        const realLstat = jest.requireActual<typeof import("node:fs/promises")>(
-            "node:fs/promises",
-        ).lstat;
+        const realLstat =
+            jest.requireActual<typeof import("node:fs/promises")>("node:fs/promises").lstat;
 
         jest.mocked(fsPromises.lstat).mockImplementation(async (path, ...args) => {
             if (String(path) === link) {

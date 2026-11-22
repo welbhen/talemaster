@@ -75,7 +75,9 @@ async function collectFiles(
         }
 
         if (!metadata.isFile()) {
-            throw new Error(`Backup source contains an unsupported filesystem entry: ${absolutePath}`);
+            throw new Error(
+                `Backup source contains an unsupported filesystem entry: ${absolutePath}`,
+            );
         }
 
         const path = toManifestPath(relative(rootDirectory, absolutePath));
@@ -289,7 +291,9 @@ export async function verifyBackupDirectory(
     } catch (error) {
         return {
             valid: false,
-            errors: [error instanceof Error ? error.message : "The backup directory could not be read."],
+            errors: [
+                error instanceof Error ? error.message : "The backup directory could not be read.",
+            ],
         };
     }
 
