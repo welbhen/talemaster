@@ -6,7 +6,8 @@
     "main": "./main.js",
     "type": "commonjs",
     "dependencies": {
-        "better-sqlite3": "^13.2.0"
+        "better-sqlite3": "^13.2.0",
+        "@zip.js/zip.js": "^2.25.0"
     },
     "devDependencies": {
         "@types/better-sqlite3": "^9.6.0",
