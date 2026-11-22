@@ -4,6 +4,15 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+jest.mock("node:fs/promises", () => {
+    const actual = jest.requireActual<typeof import("node:fs/promises")>("node:fs/promises");
+
+    return {
+        ...actual,
+        lstat: jest.fn(actual.lstat),
+    };
+});
+
 import { mkdtemp, mkdir, rm, writeFile } from "node:fs/promises";
 import * as fsPromises from "node:fs/promises";
 import { tmpdir } from "node:os";
@@ -68,14 +77,17 @@ describe("backup manifest", () => {
         await writeFile(target, "content");
         await writeFile(link, "link placeholder");
 
-        const realLstat = fsPromises.lstat.bind(fsPromises);
-        jest.spyOn(fsPromises, "lstat").mockImplementation(async (path, ...args) => {
+        const realLstat = jest.requireActual<typeof import("node:fs/promises")>(
+            "node:fs/promises",
+        ).lstat;
+
+        jest.mocked(fsPromises.lstat).mockImplementation(async (path, ...args) => {
             if (String(path) === link) {
                 return {
                     isSymbolicLink: () => true,
                     isDirectory: () => false,
                     isFile: () => false,
-                } as unknown as Awaited<ReturnType<typeof fsPromises.lstat>>;
+                } as Awaited<ReturnType<typeof fsPromises.lstat>>;
             }
 
             return realLstat(path, ...args);
