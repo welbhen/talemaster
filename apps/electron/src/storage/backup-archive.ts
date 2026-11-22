@@ -403,6 +403,12 @@ export async function extractBackupArchive(
                 continue;
             }
 
+            // ZipReader entries are DirectoryEntry | FileEntry.
+            // Only FileEntry exposes getData(), so reject directories before extraction.
+            if (entry.directory) {
+                throw new Error(`Unexpected directory entry in verified backup archive: ${entry.filename}`);
+            }
+
             const destinationPath = resolveContainedPath(destinationDirectory, entry.filename);
             await mkdir(dirname(destinationPath), { recursive: true });
 
