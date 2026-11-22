@@ -40,10 +40,7 @@ describe("backup manifest", () => {
             createdAt: new Date("2026-01-01T00:00:00.000Z"),
         });
 
-        expect(manifest.files.map((file) => file.path)).toEqual([
-            "documents/a.txt",
-            "z.txt",
-        ]);
+        expect(manifest.files.map((file) => file.path)).toEqual(["documents/a.txt", "z.txt"]);
         expect(manifest.files[0]).toMatchObject({
             size: 5,
             sha256: expect.stringMatching(/^[a-f0-9]{64}$/),
@@ -170,7 +167,9 @@ describe("backup manifest", () => {
         expect(() =>
             parseBackupManifest({
                 ...base,
-                files: [{ path: "file.txt", size: Number.MAX_SAFE_INTEGER + 1, sha256: "a".repeat(64) }],
+                files: [
+                    { path: "file.txt", size: Number.MAX_SAFE_INTEGER + 1, sha256: "a".repeat(64) },
+                ],
             }),
         ).toThrow("A backup file entry contains invalid or unsafe metadata.");
     });
@@ -182,11 +181,7 @@ describe("backup manifest", () => {
             type: "full",
             applicationVersion: "1.0.0",
         });
-        await writeFile(
-            join(directory, "manifest.json"),
-            JSON.stringify(manifest),
-            "utf8",
-        );
+        await writeFile(join(directory, "manifest.json"), JSON.stringify(manifest), "utf8");
 
         await expect(
             verifyBackupDirectory({ sourceDirectory: directory, manifest }),
@@ -248,5 +243,4 @@ describe("backup manifest", () => {
             errors: ["The backup format version is not supported."],
         });
     });
-
 });

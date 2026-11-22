@@ -91,8 +91,12 @@ function validateArchivePath(path: string): boolean {
             segment.length === 0 ||
             segment === "." ||
             segment === ".." ||
-            /[<>:"|?*\u0000-\u001f]/.test(segment) ||
-            /[. ]$/.test(segment)
+            /[<>:"|?*]/.test(segment) ||
+            /[. ]$/.test(segment) ||
+            [...segment].some((character) => {
+                const code = character.charCodeAt(0);
+                return code >= 0 && code <= 0x1f;
+            })
         ) {
             return false;
         }
@@ -171,7 +175,9 @@ async function hashArchiveEntry(
                 size += chunk.byteLength;
 
                 if (size > maxBytes) {
-                    throw new Error("A backup archive entry exceeded its actual decompressed size limit.");
+                    throw new Error(
+                        "A backup archive entry exceeded its actual decompressed size limit.",
+                    );
                 }
 
                 hash.update(chunk);
@@ -223,17 +229,13 @@ export async function createBackupArchive(
 
     const archiveHandle = await open(archivePath, "wx");
     const output = archiveHandle.createWriteStream({ autoClose: false });
-    const zipWriter = new ZipWriter(
-        Writable.toWeb(output) as WritableStream<Uint8Array>,
-        { useWebWorkers: false },
-    );
+    const zipWriter = new ZipWriter(Writable.toWeb(output) as WritableStream<Uint8Array>, {
+        useWebWorkers: false,
+    });
     let completed = false;
 
     try {
-        await zipWriter.add(
-            BACKUP_MANIFEST_FILENAME,
-            new TextReader(JSON.stringify(manifest)),
-        );
+        await zipWriter.add(BACKUP_MANIFEST_FILENAME, new TextReader(JSON.stringify(manifest)));
 
         for (const file of manifest.files) {
             const filePath = resolveContainedPath(sourceDirectory, file.path);
@@ -406,7 +408,9 @@ export async function extractBackupArchive(
             // ZipReader entries are DirectoryEntry | FileEntry.
             // Only FileEntry exposes getData(), so reject directories before extraction.
             if (entry.directory) {
-                throw new Error(`Unexpected directory entry in verified backup archive: ${entry.filename}`);
+                throw new Error(
+                    `Unexpected directory entry in verified backup archive: ${entry.filename}`,
+                );
             }
 
             const destinationPath = resolveContainedPath(destinationDirectory, entry.filename);
@@ -423,10 +427,7 @@ export async function extractBackupArchive(
             }
         }
 
-        const manifestPath = resolveContainedPath(
-            destinationDirectory,
-            BACKUP_MANIFEST_FILENAME,
-        );
+        const manifestPath = resolveContainedPath(destinationDirectory, BACKUP_MANIFEST_FILENAME);
         await writeFile(manifestPath, JSON.stringify(verification.manifest, null, 2), {
             encoding: "utf8",
             flag: "wx",

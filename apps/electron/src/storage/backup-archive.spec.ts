@@ -8,11 +8,7 @@ import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
-import {
-    createBackupArchive,
-    extractBackupArchive,
-    verifyBackupArchive,
-} from "./backup-archive";
+import { createBackupArchive, extractBackupArchive, verifyBackupArchive } from "./backup-archive";
 
 describe("backup archive", () => {
     let directory: string;
