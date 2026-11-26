@@ -6,6 +6,7 @@
 
 import type { IpcRequestChannel } from "@talemaster/ipc-bridge";
 import type { LogLevel } from "@talemaster/logging";
+import type { ProfileIpcChannels } from "./profile-ipc.types";
 
 /**
  * Wire DTOs owned by the Electron composition layer.
@@ -39,7 +40,7 @@ export interface DatabaseHealthResponse {
     readonly open: boolean;
 }
 
-export interface TaleMasterIpcChannels {
+export interface TaleMasterIpcChannels extends ProfileIpcChannels {
     "logging:write": IpcRequestChannel<RendererLogRequest, RendererLogResponse>;
     "database:request": IpcRequestChannel<DatabaseHealthRequest, DatabaseHealthResponse>;
 }
@@ -47,4 +48,5 @@ export interface TaleMasterIpcChannels {
 export const IPC_CHANNELS = {
     loggingWrite: "logging:write",
     databaseRequest: "database:request",
+    profilesRequest: "profiles:request",
 } as const satisfies Record<string, keyof TaleMasterIpcChannels>;

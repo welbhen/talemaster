@@ -16,6 +16,27 @@ export interface ElectronRendererLogRequest {
     };
 }
 
+export interface ElectronProfileDto {
+    readonly id: string;
+    readonly nickname: string;
+    readonly avatarDataUrl?: string;
+    readonly isActive: boolean;
+    readonly createdAt: string;
+    readonly updatedAt: string;
+}
+
+export interface ElectronProfileResponse {
+    readonly profiles: readonly ElectronProfileDto[];
+    readonly activeProfileId: string;
+}
+
+export type ElectronProfileRequest =
+    | { readonly operation: "list" }
+    | { readonly operation: "create"; readonly nickname: string }
+    | { readonly operation: "update"; readonly profileId: string; readonly nickname: string }
+    | { readonly operation: "switch"; readonly profileId: string }
+    | { readonly operation: "choose-avatar"; readonly profileId: string };
+
 export interface ElectronDatabaseHealth {
     readonly status: "ok";
     readonly path: string;
@@ -31,6 +52,9 @@ declare global {
             };
             readonly database: {
                 health(): Promise<ElectronDatabaseHealth>;
+            };
+            readonly profiles: {
+                request(request: ElectronProfileRequest): Promise<ElectronProfileResponse>;
             };
         };
     }
