@@ -129,7 +129,7 @@ describe("database", () => {
                 .all(),
         ).toEqual([
             { version: 1, name: "initial" },
-            { version: 2, name: "application_preferences" },
+            { version: 2, name: "application-preferences" },
         ]);
         expect(
             context.connection
