@@ -12,6 +12,7 @@ import type { DatabaseContext } from "@talemaster/database";
 import { createApplicationLogger } from "@talemaster/logging";
 import type { Logger } from "@talemaster/logging";
 
+import { handleApplicationError } from "./application-error-handler";
 import {
     createApplicationStoragePaths,
     ensureApplicationStorage,
@@ -22,24 +23,34 @@ const storagePaths = createApplicationStoragePaths(app.getPath("userData"));
 let logger: Logger | undefined;
 let databaseContext: DatabaseContext | undefined;
 
-function createWindow(): void {
-    const mainWindow = new BrowserWindow({
-        width: 1440,
-        height: 900,
-        minWidth: 1024,
-        minHeight: 700,
-        webPreferences: {
-            preload: join(__dirname, "preload.js"),
-            contextIsolation: true,
-            nodeIntegration: false,
-            sandbox: true,
-        },
-    });
+function handleFatalError(context: string, error: unknown): void {
+    handleApplicationError(context, error, logger, () => app.quit());
+}
 
-    if (isDevelopment) {
-        void mainWindow.loadURL("http://localhost:4200");
-    } else {
-        void mainWindow.loadFile(join(__dirname, "dashboard/browser/index.html"));
+function createWindow(): void {
+    try {
+        const mainWindow = new BrowserWindow({
+            width: 1440,
+            height: 900,
+            minWidth: 1024,
+            minHeight: 700,
+            webPreferences: {
+                preload: join(__dirname, "preload.js"),
+                contextIsolation: true,
+                nodeIntegration: false,
+                sandbox: true,
+            },
+        });
+
+        const loadPromise = isDevelopment
+            ? mainWindow.loadURL("http://localhost:4200")
+            : mainWindow.loadFile(join(__dirname, "dashboard/browser/index.html"));
+
+        void loadPromise.catch((error: unknown) => {
+            handleFatalError("Failed to load the application window", error);
+        });
+    } catch (error) {
+        handleFatalError("Failed to create the application window", error);
     }
 }
 
@@ -86,13 +97,7 @@ void app
         });
     })
     .catch((error: unknown) => {
-        if (logger) {
-            logger.error("Failed to initialize the application", error);
-        } else {
-            console.error("Failed to initialize the application:", error);
-        }
-
-        app.quit();
+        handleFatalError("Failed to initialize the application", error);
     });
 
 app.on("window-all-closed", () => {
