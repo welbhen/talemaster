@@ -97,7 +97,14 @@ describe("LoggerService", () => {
     });
 
     it("does not throw when metadata serialization fails", () => {
-        const metadata = new Proxy({}, { ownKeys: () => { throw new Error("blocked"); } });
+        const metadata = new Proxy(
+            {},
+            {
+                ownKeys: () => {
+                    throw new Error("blocked");
+                },
+            },
+        );
 
         expect(() => logger.info("safe", metadata)).not.toThrow();
         expect(write).toHaveBeenCalledWith(

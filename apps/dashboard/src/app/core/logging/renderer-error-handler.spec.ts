@@ -12,10 +12,7 @@ describe("RendererErrorHandler", () => {
     it("forwards framework errors to the renderer logger", () => {
         const logger = { error: jest.fn() };
         TestBed.configureTestingModule({
-            providers: [
-                RendererErrorHandler,
-                { provide: LoggerService, useValue: logger },
-            ],
+            providers: [RendererErrorHandler, { provide: LoggerService, useValue: logger }],
         });
 
         const error = new Error("component failed");

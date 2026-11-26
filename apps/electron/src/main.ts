@@ -109,10 +109,7 @@ void app
 
         ipcRegistration = registerIpc({
             assertTrustedSender: ipcSecurity.assertTrustedSender,
-            adapters: [
-                createLoggingIpcAdapter(logger),
-                createDatabaseIpcAdapter(databaseContext),
-            ],
+            adapters: [createLoggingIpcAdapter(logger), createDatabaseIpcAdapter(databaseContext)],
         });
 
         createWindow();

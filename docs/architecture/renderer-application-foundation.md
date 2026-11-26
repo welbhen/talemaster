@@ -5,12 +5,12 @@
 
 ## Delivery sequence
 
-| Order | Branch | Scope | Pull request |
-|---|---|---|---|
-| 1 | `feature/renderer-logging-foundation` | WP1 — renderer logging and framework error integration | PR 1 |
-| 2 | `feature/local-profiles` | WP2 + WP3 — local profile persistence and profile experience | PR 2 |
-| 3 | `feature/application-shell` | WP4 + WP5 — application shell, navigation, preferences | PR 3 |
-| 4 | `feature/renderer-integration-quality` | WP6 — integration and quality gates | Final PR |
+| Order | Branch                                 | Scope                                                        | Pull request |
+| ----- | -------------------------------------- | ------------------------------------------------------------ | ------------ |
+| 1     | `feature/renderer-logging-foundation`  | WP1 — renderer logging and framework error integration       | PR 1         |
+| 2     | `feature/local-profiles`               | WP2 + WP3 — local profile persistence and profile experience | PR 2         |
+| 3     | `feature/application-shell`            | WP4 + WP5 — application shell, navigation, preferences       | PR 3         |
+| 4     | `feature/renderer-integration-quality` | WP6 — integration and quality gates                          | Final PR     |
 
 Each PR must be merged before the next branch is created from the updated `master`. Do not stack dependent branches on unmerged PR heads.
 
