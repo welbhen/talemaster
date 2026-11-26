@@ -6,7 +6,11 @@
 
 import Database from "better-sqlite3";
 
-import { getApplicationPreference, setApplicationPreference, deleteApplicationPreference } from "./application-preferences";
+import {
+    deleteApplicationPreference,
+    getApplicationPreference,
+    setApplicationPreference,
+} from "./application-preferences";
 import { runMigrations } from "./migration-runner";
 import { migrations } from "./migrations";
 

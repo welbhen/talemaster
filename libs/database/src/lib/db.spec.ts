@@ -118,7 +118,10 @@ describe("database", () => {
         const context = initializeDatabase({ directory: databaseDirectory });
 
         expect(
-            context.connection.prepare("SELECT value FROM legacy_records WHERE id = 1").pluck().get(),
+            context.connection
+                .prepare("SELECT value FROM legacy_records WHERE id = 1")
+                .pluck()
+                .get(),
         ).toBe("keep-existing-data");
         expect(
             context.connection
@@ -130,7 +133,9 @@ describe("database", () => {
         ]);
         expect(
             context.connection
-                .prepare("SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'application_preferences'")
+                .prepare(
+                    "SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'application_preferences'",
+                )
                 .get(),
         ).toBeDefined();
 
@@ -139,13 +144,15 @@ describe("database", () => {
 
     it("reuses an existing database directory and database file on repeated initialization", () => {
         const first = initializeDatabase({ directory });
-        first.connection.prepare("INSERT INTO application_preferences (key, value_json) VALUES (?, ?)")
+        first.connection
+            .prepare("INSERT INTO application_preferences (key, value_json) VALUES (?, ?)")
             .run("preserved", JSON.stringify({ enabled: true }));
         closeDatabase(first);
 
         const second = initializeDatabase({ directory });
         expect(
-            second.connection.prepare("SELECT value_json FROM application_preferences WHERE key = ?")
+            second.connection
+                .prepare("SELECT value_json FROM application_preferences WHERE key = ?")
                 .pluck()
                 .get("preserved"),
         ).toBe(JSON.stringify({ enabled: true }));

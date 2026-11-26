@@ -37,10 +37,12 @@ describe("application storage paths", () => {
 
     it("rejects invalid IDs and path traversal", () => {
         expect(() => validateStorageId("../campaign")).toThrow(TypeError);
-        expect(() => getCampaignStoragePaths(createApplicationStoragePaths(directory), "../x")).toThrow(
-            TypeError,
-        );
-        expect(() => assertPathWithin(join(directory, "root"), join(directory, "outside"))).toThrow();
+        expect(() =>
+            getCampaignStoragePaths(createApplicationStoragePaths(directory), "../x"),
+        ).toThrow(TypeError);
+        expect(() =>
+            assertPathWithin(join(directory, "root"), join(directory, "outside")),
+        ).toThrow();
     });
 
     it("creates the canonical directory structure", async () => {

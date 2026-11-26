@@ -29,7 +29,10 @@ describe("CampaignFileStore", () => {
     });
 
     it("writes and reads versioned documents", async () => {
-        const document = { formatVersion: 1 as const, content: { type: "doc" as const, content: [] } };
+        const document = {
+            formatVersion: 1 as const,
+            content: { type: "doc" as const, content: [] },
+        };
         await store.writeDocument(campaignId, documentId, document);
         await expect(store.readDocument(campaignId, documentId)).resolves.toEqual(document);
     });
@@ -53,7 +56,10 @@ describe("CampaignFileStore", () => {
     });
 
     it("updates an existing document without losing its campaign directory", async () => {
-        const first = { formatVersion: 1 as const, content: { type: "doc" as const, content: [] } };
+        const first = {
+            formatVersion: 1 as const,
+            content: { type: "doc" as const, content: [] },
+        };
         const second = {
             formatVersion: 1 as const,
             content: { type: "doc" as const, content: [{ type: "paragraph" }] },
@@ -65,7 +71,12 @@ describe("CampaignFileStore", () => {
     });
 
     it("writes assets using generated IDs and allowlisted extensions", async () => {
-        const asset = await store.writeAsset(campaignId, "images", ".png", new Uint8Array([1, 2, 3]));
+        const asset = await store.writeAsset(
+            campaignId,
+            "images",
+            ".png",
+            new Uint8Array([1, 2, 3]),
+        );
         expect(asset.id).toMatch(/^[0-9a-f-]{36}$/);
         expect(asset.extension).toBe(".png");
         await expect(
@@ -112,8 +123,6 @@ describe("CampaignFileStore", () => {
         );
         await mkdir(join(documentPath, ".."), { recursive: true });
         await writeFile(documentPath, "{ invalid json");
-        await expect(store.readDocument(campaignId, documentId)).rejects.toThrow(
-            "invalid JSON",
-        );
+        await expect(store.readDocument(campaignId, documentId)).rejects.toThrow("invalid JSON");
     });
 });

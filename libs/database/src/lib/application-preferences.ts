@@ -24,7 +24,10 @@ function serializeValue(value: unknown): string {
         throw new TypeError("Preference value must be JSON-serializable.");
     }
 
-    if (serialized === undefined || Buffer.byteLength(serialized, "utf8") > MAX_VALUE_BYTES) {
+    if (
+        serialized === undefined ||
+        Buffer.byteLength(serialized, "utf8") > MAX_VALUE_BYTES
+    ) {
         throw new RangeError("Preference value is empty or exceeds the maximum supported size.");
     }
 
@@ -40,7 +43,9 @@ export function getApplicationPreference<T>(
         .prepare("SELECT value_json FROM application_preferences WHERE key = ?")
         .get(key) as { readonly value_json: string } | undefined;
 
-    if (!row) return undefined;
+    if (!row) {
+        return undefined;
+    }
 
     try {
         return JSON.parse(row.value_json) as T;

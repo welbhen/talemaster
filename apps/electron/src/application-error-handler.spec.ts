@@ -31,7 +31,12 @@ describe("handleApplicationError", () => {
 
         try {
             expect(() =>
-                handleApplicationError("Application initialization failed", new Error("failure"), logger, quit),
+                handleApplicationError(
+                    "Application initialization failed",
+                    new Error("failure"),
+                    logger,
+                    quit,
+                ),
             ).not.toThrow();
             expect(quit).toHaveBeenCalledTimes(1);
         } finally {

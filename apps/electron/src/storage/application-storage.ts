@@ -7,7 +7,8 @@
 import { lstat, mkdir } from "node:fs/promises";
 import { dirname, join, relative, resolve, sep } from "node:path";
 
-const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const UUID_PATTERN =
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 export interface ApplicationStoragePaths {
     readonly root: string;
@@ -74,7 +75,11 @@ export function getCampaignStoragePaths(
 export function assertPathWithin(parent: string, candidate: string): void {
     const pathFromParent = relative(resolve(parent), resolve(candidate));
 
-    if (pathFromParent === ".." || pathFromParent.startsWith(`..${sep}`) || pathFromParent.startsWith(sep)) {
+    if (
+        pathFromParent === ".." ||
+        pathFromParent.startsWith(`..${sep}`) ||
+        pathFromParent.startsWith(sep)
+    ) {
         throw new Error("Storage path escapes its permitted directory.");
     }
 }
