@@ -33,7 +33,16 @@
         "format": "prettier --write .",
         "format:check": "prettier --check .",
         "copyright:add": "node libs/scripts/copyright/add-headers.mjs",
-        "copyright:check": "node libs/scripts/copyright/check-headers.mjs"
+        "copyright:check": "node libs/scripts/copyright/check-headers.mjs",
+        "build:electron": "nx run electron:build:production",
+        "assemble:desktop": "nx run electron:assemble",
+        "package:desktop": "nx run electron:package",
+        "test:electron": "nx test electron",
+        "lint:dashboard": "nx lint dashboard",
+        "lint:electron": "nx lint electron",
+        "check:dashboard": "npm run lint:dashboard && npm run test:dashboard && npm run build:dashboard",
+        "check:electron": "npm run lint:electron && npm run test:electron && npm run build:electron",
+        "check": "npm run format:check && npm run copyright:check && npm run lint && npm run test && npm run build:dashboard && npm run build:electron"
     },
     "devDependencies": {
         "@angular-devkit/core": "~22.2.0",
