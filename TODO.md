@@ -1,6 +1,8 @@
 # TaleMaster — Technical TODO
 
-This file tracks engineering work for the current foundation phase. It is intentionally separate from the product feature roadmap.
+This file tracks engineering work for the current foundation and renderer application phase. It is intentionally separate from the product feature roadmap.
+
+The renderer phase is delivered through four sequential PRs: WP1 (renderer logging), WP2+WP3 (local profiles), WP4+WP5 (application shell and preferences), and WP6 (integration and quality). Each PR is based on the latest merged `master`.
 
 ## Current foundation status
 
@@ -28,13 +30,16 @@ This file tracks engineering work for the current foundation phase. It is intent
 - [x] Dedicated logging library implemented under `libs/logging`.
 - [x] Structured logging, console and rotating JSON Lines file transports implemented.
 - [x] Logging integrated into the Electron main-process lifecycle.
-- [x] Renderer logging integrated through the secure IPC boundary.
+- [x] Renderer logging IPC contract, preload capability, and main-process adapter implemented.
+- [x] Register logging/database IPC adapters in the Electron main-process lifecycle behind trusted-sender validation.
+- [x] Add Angular-injectable renderer LoggerService and framework ErrorHandler using the existing IPC capability.
+- [ ] Verify renderer log persistence in a running Electron integration environment; safe console fallback is implemented and unit-tested.
 - [x] Logging and IPC tests implemented.
 - [x] Secure Electron IPC architecture and application integration completed.
 - [x] Copyright header configuration and automation implemented.
 - [x] Copyright headers applied and compliance validation tested successfully.
-- [ ] Verify GitHub Actions test execution and CI validation on the current PR head.
-- [ ] Validate Electron production build and packaging with the integrated logging, IPC, and storage infrastructure.
+- [x] Verify GitHub Actions test execution and CI validation on the merged storage foundation PR (confirmed by project owner).
+- [x] Validate Electron production build and packaging with the integrated logging, IPC, and storage infrastructure on the merged storage foundation PR (confirmed by project owner).
 
 ## Completed foundation work
 
@@ -53,9 +58,9 @@ This file tracks engineering work for the current foundation phase. It is intent
 - [x] Initialize logging before SQLite so database initialization failures can be recorded.
 - [x] Integrate the logger into the Electron main-process lifecycle.
 - [x] Replace existing application-level console logging with the appropriate logger methods.
-- [x] Implement renderer logging through the secure IPC boundary.
+- [x] Implement the renderer-to-main logging IPC adapter; Angular service integration is tracked in the renderer application phase.
 - [x] Add tests for log levels, timestamps, metadata, error serialization, console output, file persistence, rotation, retention, and failure handling.
-- [x] Verify development and production logging behavior.
+- [ ] Verify development and production renderer logging behavior in a running Electron application.
 
 ### 2. Copyright headers and compliance automation
 
@@ -106,6 +111,46 @@ This file tracks engineering work for the current foundation phase. It is intent
 - [x] Keep shutdown request guaranteed even if error logging unexpectedly throws.
 - [x] Catch asynchronous BrowserWindow content-loading failures and synchronous window-construction failures.
 - [ ] Add integration-level verification of startup failure, window load failure, and shutdown behavior in the Electron runtime.
+
+## Renderer application phase
+
+### PR 1 — WP1: Renderer logging foundation
+
+- [x] Wire existing IPC adapters into the Electron main-process lifecycle with trusted-sender validation.
+- [x] Implement Angular LoggerService using the restricted preload logging capability.
+- [x] Normalize renderer metadata and errors into bounded structured-clone-safe payloads.
+- [x] Add safe console fallback for unavailable/rejected IPC logging without recursive logging.
+- [x] Route Angular framework errors through a custom ErrorHandler.
+- [x] Add renderer logger and ErrorHandler unit tests; [ ] add/verify IPC registration integration coverage.
+- [x] Add focused npm scripts for dashboard/Electron lint, test, and build; expose desktop assembly and a combined verification command.
+- [x] Update technical decisions and renderer architecture documentation.
+
+### PR 2 — WP2 + WP3: Local profiles
+
+- [ ] Add local profile schema and transactional migration.
+- [ ] Implement profile metadata repository and main-process application service.
+- [ ] Implement managed avatar storage and validation through a narrow native file-selection capability.
+- [ ] Expose typed profile IPC operations through preload.
+- [ ] Implement Angular profile service and profile create/edit/list/switch experience.
+- [ ] Provide a default first-launch profile without mandatory setup.
+- [ ] Add profile and avatar lifecycle tests.
+- [ ] Do not associate campaigns or other domain data with profiles until that relationship is explicitly decided.
+
+### PR 3 — WP4 + WP5: Application shell and preferences
+
+- [ ] Implement desktop-first Angular shell, sidebar, top bar, and router outlet.
+- [ ] Add initial navigation routes and honest placeholders for unimplemented features.
+- [ ] Integrate active profile and profile switching into the shell.
+- [ ] Implement persisted theme and language switching using existing preferences.
+- [ ] Add consistent loading, empty, and error states.
+- [ ] Add shell, navigation, and preference tests.
+
+### Final PR — WP6: Integration and quality
+
+- [ ] Add end-to-end smoke coverage for application startup, renderer logging, profile switching, and navigation.
+- [ ] Verify renderer logs are persisted through the existing main-process logger.
+- [ ] Run and verify formatting, copyright, lint, tests, production builds, Electron assembly, and packaging checks.
+- [ ] Reconcile architecture documentation and TODO statuses against the merged implementation and actual validation evidence.
 
 ## Remaining technical foundation work
 
