@@ -16,13 +16,11 @@ import {
     createApplicationStoragePaths,
     ensureApplicationStorage,
 } from "./storage/application-storage";
-import { CampaignFileStore } from "./storage/campaign-file-store";
 
 const isDevelopment = !app.isPackaged;
 const storagePaths = createApplicationStoragePaths(app.getPath("userData"));
 let logger: Logger | undefined;
 let databaseContext: DatabaseContext | undefined;
-let campaignFileStore: CampaignFileStore | undefined;
 
 function createWindow(): void {
     const mainWindow = new BrowserWindow({
@@ -46,8 +44,6 @@ function createWindow(): void {
 }
 
 app.on("before-quit", () => {
-    campaignFileStore = undefined;
-
     if (!databaseContext) {
         return;
     }
@@ -80,7 +76,6 @@ void app
         databaseContext = initializeDatabase({
             directory: storagePaths.database,
         });
-        campaignFileStore = new CampaignFileStore(storagePaths);
 
         createWindow();
 

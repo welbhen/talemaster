@@ -24,7 +24,7 @@ import {
 
 export type CampaignAssetKind = "images" | "attachments";
 
-const IMAGE_EXTENSIONS = new Set([".png", ".jpg", ".jpeg", ".gif", ".webp", ".svg"]);
+const IMAGE_EXTENSIONS = new Set([".png", ".jpg", ".jpeg", ".gif", ".webp"]);
 const ATTACHMENT_EXTENSIONS = new Set([".pdf", ".txt", ".md", ".docx", ".xlsx", ".pptx", ".zip"]);
 const MAX_DOCUMENT_BYTES = 10 * 1024 * 1024;
 const MAX_ASSET_BYTES = 100 * 1024 * 1024;
@@ -57,11 +57,9 @@ function normalizeExtension(kind: CampaignAssetKind, extension: string): string 
 }
 
 async function atomicWrite(path: string, data: string | Uint8Array): Promise<void> {
-    await mkdir(join(path, ".."), { recursive: true });
-    const temporaryPath = join(
-        join(path, ".."),
-        `.${basename(path)}.${randomUUID()}.tmp`,
-    );
+    const directory = join(path, "..");
+    await mkdir(directory, { recursive: true });
+    const temporaryPath = join(directory, `.${basename(path)}.${randomUUID()}.tmp`);
     const handle = await open(temporaryPath, "wx");
 
     try {

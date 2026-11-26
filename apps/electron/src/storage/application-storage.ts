@@ -72,16 +72,9 @@ export function getCampaignStoragePaths(
 
 /** Rejects paths that escape the supplied storage boundary. */
 export function assertPathWithin(parent: string, candidate: string): void {
-    const resolvedParent = resolve(parent);
-    const resolvedCandidate = resolve(candidate);
-    const pathFromParent = relative(resolvedParent, resolvedCandidate);
+    const pathFromParent = relative(resolve(parent), resolve(candidate));
 
-    if (
-        pathFromParent === ".." ||
-        pathFromParent.startsWith(`..${sep}`) ||
-        resolve(resolvedCandidate) === resolvedParent && resolvedCandidate !== resolvedParent ||
-        (!pathFromParent && resolvedCandidate !== resolvedParent)
-    ) {
+    if (pathFromParent === ".." || pathFromParent.startsWith(`..${sep}`) || pathFromParent.startsWith(sep)) {
         throw new Error("Storage path escapes its permitted directory.");
     }
 }
@@ -132,6 +125,5 @@ export async function assertSafeExistingPath(root: string, candidate: string): P
         }
     }
 
-    const parent = dirname(resolve(candidate));
-    assertPathWithin(root, parent);
+    assertPathWithin(root, dirname(resolve(candidate)));
 }
