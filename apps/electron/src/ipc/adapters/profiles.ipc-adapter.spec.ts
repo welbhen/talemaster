@@ -6,28 +6,26 @@
 
 jest.mock("electron", () => ({ dialog: { showOpenDialog: jest.fn() } }));
 
-import Database from "better-sqlite3";
 import { dialog } from "electron";
 import { mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { runMigrations, migrations } from "@talemaster/database";
+import { closeDatabase, initializeDatabase } from "@talemaster/database";
 import { createApplicationStoragePaths, ensureApplicationStorage } from "../../storage/application-storage";
 import { createProfilesIpcAdapter } from "./profiles.ipc-adapter";
 
 describe("profiles IPC adapter", () => {
-    let database: Database.Database;
+    let database: ReturnType<typeof initializeDatabase>;
     let directory: string;
     let handler: (request: unknown) => Promise<unknown>;
 
     beforeEach(async () => {
-        database = new Database(":memory:");
-        runMigrations(database, migrations);
+        database = initializeDatabase({ directory: join(directory, "database") });
         directory = await mkdtemp(join(tmpdir(), "talemaster-profile-ipc-"));
         const storage = createApplicationStoragePaths(directory);
         await ensureApplicationStorage(storage);
         createProfilesIpcAdapter({
-            database: { connection: database, path: ":memory:" },
+            database,
             storage,
         }).register({
             handle: (_channel: string, callback: (request: unknown) => Promise<unknown>) => {
@@ -37,7 +35,7 @@ describe("profiles IPC adapter", () => {
     });
 
     afterEach(async () => {
-        database.close();
+        closeDatabase(database);
         await rm(directory, { recursive: true, force: true });
         jest.clearAllMocks();
     });
