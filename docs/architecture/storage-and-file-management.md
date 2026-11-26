@@ -33,7 +33,7 @@ This is an established project decision. All application-owned persistent data l
 └── settings/
 ```
 
-The database and logs locations preserve the existing implementation. Campaign and backup directories are owned by the Electron main process. The `settings/` directory is reserved; preferences are intended to be stored in SQLite, so it must not become a parallel settings store.
+The database and logs locations preserve the existing implementation. Campaign and backup directories are owned by the Electron main process. The `settings/` directory is reserved; preferences are stored in SQLite, so it must not become a parallel settings store.
 
 ## 3. Storage ownership
 
@@ -93,10 +93,11 @@ All persistent filesystem operations run in the Electron main process.
 - Resolve every path from the canonical application root; never accept an absolute path from the renderer.
 - Validate IDs and resource ownership at IPC boundaries.
 - Reject path traversal, symbolic links, unexpected filesystem entry types, and paths escaping the intended campaign directory.
-- Use generated filenames; validate extensions and file size/type before storing binary resources.
+- Use generated filenames; validate extensions and file size/type before storing binary resources. Current size limits are provisional arbitrary engineering defaults documented in source JSDoc, not finalized product requirements.
 - Write new content to a uniquely named temporary file in the destination directory, flush and close it, then rename it into place.
 - Use the existing storage coordinator for operations that must be consistent with snapshots.
 - Never expose generic filesystem read/write/delete IPC methods.
+- Do not expose destructive asset deletion until SQLite metadata can verify ownership/references and a recoverable deletion sequence is implemented.
 
 ## 7. Lifecycle and recovery
 
@@ -104,7 +105,7 @@ SQLite transactions and filesystem operations are not one atomic transaction. Re
 
 - **Create:** validate; write and flush a temporary file; rename into place; persist metadata; reconcile a file left behind if metadata persistence fails.
 - **Update:** write and flush a temporary replacement; atomically replace the file; update metadata in the coordinated operation. Preserve the previous valid file until replacement is ready.
-- **Delete:** enforce reference rules; record a recoverable deletion state or equivalent journal; remove the file; finalize metadata. Do not silently swallow filesystem failures.
+- **Delete:** enforce reference rules; record a recoverable deletion state or equivalent journal; remove the file; finalize metadata. Do not silently swallow filesystem failures. This operation is not implemented/enabled yet.
 - **Startup/integrity scan:** detect missing referenced files, unreferenced files, stale temporary files, and incomplete deletion states. Report and reconcile safely.
 - **Orphans:** never automatically delete unreferenced files on ordinary startup. Cleanup is explicit and only after verification.
 

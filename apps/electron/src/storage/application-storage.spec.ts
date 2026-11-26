@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { mkdtemp, mkdir, rm, symlink } from "node:fs/promises";
+import { mkdtemp, mkdir, readFile, rm, symlink, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
@@ -47,6 +47,19 @@ describe("application storage paths", () => {
         const paths = createApplicationStoragePaths(directory);
         await ensureApplicationStorage(paths);
         expect(paths.root).toContain(join(directory, "talemaster"));
+    });
+
+    it("is idempotent and preserves pre-existing directories and files", async () => {
+        const paths = createApplicationStoragePaths(directory);
+        const existingDirectory = join(paths.root, "campaigns");
+        await mkdir(existingDirectory, { recursive: true });
+        const markerPath = join(existingDirectory, "existing-marker.txt");
+        await writeFile(markerPath, "preserve me");
+
+        await ensureApplicationStorage(paths);
+        await ensureApplicationStorage(paths);
+
+        await expect(readFile(markerPath, "utf8")).resolves.toBe("preserve me");
     });
 
     it("rejects symbolic links in managed paths", async () => {
