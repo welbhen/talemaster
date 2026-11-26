@@ -20,8 +20,8 @@ describe("profiles IPC adapter", () => {
     let handler: (request: unknown) => Promise<unknown>;
 
     beforeEach(async () => {
-        database = initializeDatabase({ directory: join(directory, "database") });
         directory = await mkdtemp(join(tmpdir(), "talemaster-profile-ipc-"));
+        database = initializeDatabase({ directory: join(directory, "database") });
         const storage = createApplicationStoragePaths(directory);
         await ensureApplicationStorage(storage);
         createProfilesIpcAdapter({
