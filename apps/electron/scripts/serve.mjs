@@ -4,16 +4,17 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { access } from "node:fs/promises";
 import { watch } from "node:fs";
+import { access, stat } from "node:fs/promises";
 import { createRequire } from "node:module";
-import { join, resolve } from "node:path";
-import { setTimeout as delay } from "node:timers/promises";
+import { dirname, join, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 import { spawn } from "node:child_process";
 import { request } from "node:http";
+import { setTimeout as delay } from "node:timers/promises";
 
 const require = createRequire(import.meta.url);
-const workspaceRoot = resolve(import.meta.dirname, "../../..");
+const workspaceRoot = resolve(dirname(fileURLToPath(import.meta.url)), "../../..");
 const nxCli = join(workspaceRoot, "node_modules/nx/bin/nx.js");
 const electronOutput = join(workspaceRoot, "dist/apps/electron");
 const electronBinary = require("electron");
@@ -23,156 +24,190 @@ const children = new Set();
 let electronProcess;
 let outputWatcher;
 let restartTimer;
+let restartChain = Promise.resolve();
+let shutdownPromise;
 let shuttingDown = false;
 
-function startProcess(command, args, options = {}) {
+function startProcess(command, args) {
     const child = spawn(command, args, {
         cwd: workspaceRoot,
         stdio: "inherit",
-        ...options,
+        windowsHide: false,
     });
 
     children.add(child);
     child.once("exit", (code, signal) => {
         children.delete(child);
+        if (shuttingDown) return;
 
-        if (!shuttingDown && code !== 0 && code !== null) {
-            console.error(
-                `Development process exited with code ${code}: ${command}`,
-            );
-            shutdown(code);
-        } else if (!shuttingDown && signal) {
-            console.error(`Development process stopped: ${command} (${signal})`);
-            shutdown(1);
+        if (child === electronProcess) {
+            electronProcess = undefined;
+            console.log("TaleMaster window closed. Stopping development processes...");
+            void shutdown(code ?? (signal ? 1 : 0));
+            return;
+        }
+
+        if (code !== 0 || signal) {
+            console.error(`Development process stopped unexpectedly: ${command} (code: ${code}, signal: ${signal})`);
+            void shutdown(code ?? 1);
         }
     });
 
     child.once("error", (error) => {
         console.error(`Failed to start ${command}:`, error);
-        shutdown(1);
+        void shutdown(1);
     });
 
     return child;
 }
 
-function isServerReady() {
+function waitForExit(child, timeoutMs = 5000) {
+    if (child.exitCode !== null || child.signalCode !== null) return Promise.resolve();
+
+    return new Promise((resolveExit) => {
+        const timeout = setTimeout(() => resolveExit(false), timeoutMs);
+        child.once("exit", () => {
+            clearTimeout(timeout);
+            resolveExit(true);
+        });
+    });
+}
+
+async function stopProcess(child) {
+    if (!child || child.exitCode !== null || child.signalCode !== null) return;
+
+    if (isWindows && child.pid) {
+        await new Promise((resolveKill) => {
+            const killer = spawn("taskkill.exe", ["/pid", String(child.pid), "/t", "/f"], {
+                stdio: "ignore",
+                windowsHide: true,
+            });
+            killer.once("error", resolveKill);
+            killer.once("exit", resolveKill);
+        });
+    } else {
+        child.kill("SIGTERM");
+        const stopped = await waitForExit(child);
+        if (!stopped) child.kill("SIGKILL");
+    }
+
+    await waitForExit(child, 2000);
+}
+
+function isDashboardReady() {
     return new Promise((resolveReady) => {
         const req = request(
-            {
-                hostname: "127.0.0.1",
-                port: 4200,
-                path: "/",
-                method: "GET",
-                timeout: 1500,
-            },
+            { hostname: "127.0.0.1", port: 4200, path: "/", method: "GET", timeout: 1500 },
             (response) => {
                 response.resume();
-                resolveReady(
-                    response.statusCode !== undefined &&
-                        response.statusCode < 500,
-                );
+                resolveReady(response.statusCode !== undefined && response.statusCode < 500);
             },
         );
-
-        req.once("timeout", () => {
-            req.destroy();
-            resolveReady(false);
-        });
+        req.once("timeout", () => { req.destroy(); resolveReady(false); });
         req.once("error", () => resolveReady(false));
         req.end();
     });
 }
 
-async function waitForStartup() {
-    const timeoutAt = Date.now() + 120_000;
-
-    while (!shuttingDown && Date.now() < timeoutAt) {
-        const [mainExists, preloadExists, dashboardReady] = await Promise.all([
-            access(join(electronOutput, "main.js")).then(() => true, () => false),
-            access(join(electronOutput, "preload.js")).then(() => true, () => false),
-            isServerReady(),
+async function hasFreshBuild(startedAt) {
+    try {
+        const [main, preload] = await Promise.all([
+            stat(join(electronOutput, "main.js")),
+            stat(join(electronOutput, "preload.js")),
         ]);
+        return main.mtimeMs >= startedAt && preload.mtimeMs >= startedAt;
+    } catch {
+        return false;
+    }
+}
 
-        if (mainExists && preloadExists && dashboardReady) return;
+async function waitForStartup(startedAt) {
+    const timeoutAt = Date.now() + 120_000;
+    while (!shuttingDown && Date.now() < timeoutAt) {
+        const [buildReady, dashboardReady] = await Promise.all([
+            hasFreshBuild(startedAt),
+            isDashboardReady(),
+        ]);
+        if (buildReady && dashboardReady) return;
         await delay(500);
     }
 
-    throw new Error(
-        "Development startup timed out. Check the dashboard and Electron build output above.",
-    );
+    if (!shuttingDown) {
+        throw new Error("Startup timed out. Check the dashboard server and Electron build output above.");
+    }
 }
 
 function launchElectron() {
     if (shuttingDown) return;
-
     console.log("Starting TaleMaster Electron...");
     electronProcess = startProcess(electronBinary, [electronOutput]);
 }
 
-function restartElectron() {
+async function restartElectron() {
     if (shuttingDown) return;
+    const previous = electronProcess;
+    electronProcess = undefined;
+    if (previous) {
+        await stopProcess(previous);
+        children.delete(previous);
+    }
+    if (!shuttingDown) launchElectron();
+}
 
+function scheduleRestart() {
+    if (shuttingDown) return;
     if (restartTimer) clearTimeout(restartTimer);
     restartTimer = setTimeout(() => {
-        if (electronProcess && !electronProcess.killed) {
-            electronProcess.kill();
-        }
-
-        launchElectron();
-    }, 300);
+        restartChain = restartChain.then(restartElectron).catch((error) => {
+            console.error("Could not restart Electron:", error);
+            void shutdown(1);
+        });
+    }, 400);
 }
 
 function watchElectronOutput() {
     outputWatcher = watch(electronOutput, (_eventType, filename) => {
-        if (filename !== "main.js" && filename !== "preload.js") return;
-        restartElectron();
+        const changedFile = filename?.toString();
+        if (changedFile === "main.js" || changedFile === "preload.js") scheduleRestart();
     });
-
     outputWatcher.on("error", (error) => {
         console.error("Electron output watcher failed:", error);
-        shutdown(1);
+        void shutdown(1);
     });
 }
 
 function shutdown(exitCode = 0) {
-    if (shuttingDown) return;
+    if (shutdownPromise) return shutdownPromise;
     shuttingDown = true;
-
     if (restartTimer) clearTimeout(restartTimer);
     outputWatcher?.close();
 
-    for (const child of children) {
-        child.kill();
-    }
-
-    setTimeout(() => {
-        process.exit(exitCode);
-    }, isWindows ? 500 : 100);
+    shutdownPromise = (async () => {
+        await Promise.all([...children].map(stopProcess));
+        process.exitCode = exitCode;
+    })();
+    return shutdownPromise;
 }
 
-process.on("SIGINT", () => shutdown(0));
-process.on("SIGTERM", () => shutdown(0));
+process.on("SIGINT", () => { void shutdown(0); });
+process.on("SIGTERM", () => { void shutdown(0); });
 
 async function main() {
     console.log("Starting TaleMaster development environment...");
-    startProcess(process.execPath, [nxCli, "serve", "dashboard"]);
-    startProcess(process.execPath, [
-        nxCli,
-        "run",
-        "electron:build:development",
-        "--watch",
-    ]);
+    const buildStartedAt = Date.now();
 
-    await waitForStartup();
+    startProcess(process.execPath, [nxCli, "serve", "dashboard"]);
+    startProcess(process.execPath, [nxCli, "run", "electron:build:development", "--watch"]);
+
+    await waitForStartup(buildStartedAt);
     if (shuttingDown) return;
 
     watchElectronOutput();
     launchElectron();
-
     console.log("TaleMaster is running. Press Ctrl+C to stop all processes.");
 }
 
-main().catch((error) => {
+main().catch(async (error) => {
     console.error(error);
-    shutdown(1);
+    await shutdown(1);
 });

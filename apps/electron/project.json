@@ -7,17 +7,26 @@
     "targets": {
         "build": {
             "executor": "@nx/esbuild:esbuild",
-            "outputs": ["{options.outputPath}"],
+            "outputs": [
+                "{options.outputPath}"
+            ],
             "defaultConfiguration": "production",
             "options": {
                 "platform": "node",
                 "outputPath": "dist/apps/electron",
-                "format": ["cjs"],
+                "format": [
+                    "cjs"
+                ],
                 "bundle": true,
-                "external": ["electron", "better-sqlite3"],
+                "external": [
+                    "electron",
+                    "better-sqlite3"
+                ],
                 "main": "apps/electron/src/main.ts",
                 "tsConfig": "apps/electron/tsconfig.app.json",
-                "assets": ["apps/electron/src/assets"],
+                "assets": [
+                    "apps/electron/src/assets"
+                ],
                 "generatePackageJson": true,
                 "esbuildOptions": {
                     "sourcemap": true,
@@ -25,7 +34,9 @@
                         ".js": ".js"
                     }
                 },
-                "additionalEntryPoints": ["apps/electron/src/preload.ts"],
+                "additionalEntryPoints": [
+                    "apps/electron/src/preload.ts"
+                ],
                 "input": "apps/electron",
                 "glob": "forge.config.cjs",
                 "output": "."
@@ -44,12 +55,16 @@
             "dependsOn": [
                 {
                     "target": "build",
-                    "projects": ["dashboard"]
+                    "projects": [
+                        "dashboard"
+                    ]
                 }
             ]
         },
         "prune-lockfile": {
-            "dependsOn": ["build"],
+            "dependsOn": [
+                "build"
+            ],
             "cache": true,
             "executor": "@nx/js:prune-lockfile",
             "outputs": [
@@ -61,21 +76,31 @@
             }
         },
         "copy-workspace-modules": {
-            "dependsOn": ["build"],
+            "dependsOn": [
+                "build"
+            ],
             "cache": true,
-            "outputs": ["{workspaceRoot}/dist/apps/electron/workspace_modules"],
+            "outputs": [
+                "{workspaceRoot}/dist/apps/electron/workspace_modules"
+            ],
             "executor": "@nx/js:copy-workspace-modules",
             "options": {
                 "buildTarget": "build"
             }
         },
         "prune": {
-            "dependsOn": ["prune-lockfile", "copy-workspace-modules"],
+            "dependsOn": [
+                "prune-lockfile",
+                "copy-workspace-modules"
+            ],
             "executor": "nx:noop"
         },
         "serve": {
+            "executor": "nx:run-commands",
             "continuous": true,
-            "dependsOn": ["^build"]
+            "options": {
+                "command": "node apps/electron/scripts/serve.mjs"
+            }
         },
         "test": {
             "options": {
@@ -84,14 +109,18 @@
         },
         "assemble": {
             "executor": "nx:run-commands",
-            "dependsOn": ["build"],
+            "dependsOn": [
+                "build"
+            ],
             "options": {
                 "command": "node apps/electron/scripts/assemble.mjs"
             }
         },
         "package": {
             "executor": "nx:run-commands",
-            "dependsOn": ["assemble"],
+            "dependsOn": [
+                "assemble"
+            ],
             "options": {
                 "command": "npx electron-forge make dist/apps/electron"
             }
