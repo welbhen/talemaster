@@ -1,0 +1,60 @@
+/**
+ * Copyright 2026 Welberth Marques
+ * github.com/welbhen/talemaster
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+import { mkdtemp, readFile, rm } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+
+import { createApplicationStoragePaths, ensureApplicationStorage } from "./application-storage";
+import { CampaignFileStore } from "./campaign-file-store";
+
+describe("CampaignFileStore", () => {
+    let directory: string;
+    let store: CampaignFileStore;
+    const campaignId = "f6a5b7c8-1234-4123-8123-123456789abc";
+    const documentId = "a6a5b7c8-1234-4123-8123-123456789abc";
+
+    beforeEach(async () => {
+        directory = await mkdtemp(join(tmpdir(), "talemaster-files-"));
+        const paths = createApplicationStoragePaths(directory);
+        await ensureApplicationStorage(paths);
+        store = new CampaignFileStore(paths);
+    });
+
+    afterEach(async () => {
+        await rm(directory, { recursive: true, force: true });
+    });
+
+    it("writes and reads versioned documents", async () => {
+        const document = { formatVersion: 1 as const, content: { type: "doc" as const, content: [] } };
+        await store.writeDocument(campaignId, documentId, document);
+        await expect(store.readDocument(campaignId, documentId)).resolves.toEqual(document);
+    });
+
+    it("writes assets using generated IDs and allowlisted extensions", async () => {
+        const asset = await store.writeAsset(campaignId, "images", ".png", new Uint8Array([1, 2, 3]));
+        expect(asset.id).toMatch(/^[0-9a-f-]{36}$/);
+        expect(asset.extension).toBe(".png");
+        await expect(
+            readFile(
+                join(directory, "talemaster", "campaigns", campaignId, "images", `${asset.id}.png`),
+            ),
+        ).resolves.toEqual(Buffer.from([1, 2, 3]));
+        await expect(
+            store.writeAsset(campaignId, "images", ".exe", new Uint8Array([1])),
+        ).rejects.toThrow("Unsupported");
+    });
+
+    it("reports inventory without deleting files", async () => {
+        await store.writeDocument(campaignId, documentId, {
+            formatVersion: 1,
+            content: { type: "doc", content: [] },
+        });
+        const inventory = await store.scanCampaign(campaignId);
+        expect(inventory.documents).toEqual([`${documentId}.json`]);
+        expect(inventory.unsafeEntries).toEqual([]);
+    });
+});

@@ -99,11 +99,18 @@ This file tracks the next engineering tasks for the current foundation phase. It
 
 ### 1. Application data and filesystem conventions
 
-- [ ] Finalize the application data directory layout beneath Electron's `userData` path.
-- [ ] Define ownership and lifecycle rules for campaign documents, images, and attachments.
-- [ ] Define the persisted ngx-editor structured JSON document format and metadata/reference relationship.
-- [ ] Establish safe file naming, path validation, and deletion/orphan handling rules.
-- [ ] Decide where application preferences live (SQLite or a separate local settings store).
+Implementation is present on `feature/storage-conventions`; keep the completion boxes open until PR validation succeeds.
+
+- [ ] Validate the canonical `app.getPath("userData")/talemaster` directory resolver and directory initialization.
+- [ ] Validate UUID-only campaign/document/resource path derivation and path-containment checks.
+- [ ] Validate symlink rejection and safe directory handling.
+- [ ] Validate atomic document and asset writes, size limits, and extension allowlists.
+- [ ] Validate versioned ngx-editor JSON document serialization and unsupported-version rejection.
+- [ ] Validate non-destructive campaign filesystem inventory scanning.
+- [ ] Validate SQLite-backed JSON application preferences migration and CRUD operations.
+- [ ] Design metadata-backed asset ownership, recoverable deletion/journaling, and orphan reconciliation with the campaign schema before enabling destructive lifecycle operations.
+- [ ] Expose only the required resource operations through narrowly scoped, sender-authorized IPC contracts when the feature/domain contracts are ready.
+
 
 ### 2. Backup, recovery, and integrity
 

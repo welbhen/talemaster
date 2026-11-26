@@ -12,13 +12,17 @@ import type { DatabaseContext } from "@talemaster/database";
 import { createApplicationLogger } from "@talemaster/logging";
 import type { Logger } from "@talemaster/logging";
 
+import {
+    createApplicationStoragePaths,
+    ensureApplicationStorage,
+} from "./storage/application-storage";
+import { CampaignFileStore } from "./storage/campaign-file-store";
+
 const isDevelopment = !app.isPackaged;
+const storagePaths = createApplicationStoragePaths(app.getPath("userData"));
 let logger: Logger | undefined;
 let databaseContext: DatabaseContext | undefined;
-
-function getRootDir(): string {
-    return app.getPath("userData") + "talemaster/";
-}
+let campaignFileStore: CampaignFileStore | undefined;
 
 function createWindow(): void {
     const mainWindow = new BrowserWindow({
@@ -42,6 +46,8 @@ function createWindow(): void {
 }
 
 app.on("before-quit", () => {
+    campaignFileStore = undefined;
+
     if (!databaseContext) {
         return;
     }
@@ -60,18 +66,21 @@ app.on("before-quit", () => {
 
 void app
     .whenReady()
-    .then(() => {
+    .then(async () => {
+        await ensureApplicationStorage(storagePaths);
+
         logger = createApplicationLogger(
             {
-                directory: join(getRootDir(), "logs"),
+                directory: storagePaths.logs,
                 isDevelopment,
             },
             "Application",
         );
 
         databaseContext = initializeDatabase({
-            directory: join(getRootDir(), "database"),
+            directory: storagePaths.database,
         });
+        campaignFileStore = new CampaignFileStore(storagePaths);
 
         createWindow();
 
