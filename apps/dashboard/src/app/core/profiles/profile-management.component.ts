@@ -7,6 +7,9 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { TranslocoPipe } from "@jsverse/transloco";
+import { ButtonModule } from "@openng/optimus-ui/button";
+import { CardModule } from "@openng/optimus-ui/card";
+import { InputTextModule } from "@openng/optimus-ui/inputtext";
 import { LoggerService } from "../logging/logger.service";
 import type { Profile } from "./profile.types";
 import { ProfileService } from "./profile.service";
@@ -14,7 +17,7 @@ import { ProfileService } from "./profile.service";
 @Component({
     selector: "app-profile-management",
     standalone: true,
-    imports: [FormsModule, TranslocoPipe],
+    imports: [FormsModule, TranslocoPipe, ButtonModule, CardModule, InputTextModule],
     templateUrl: "./profile-management.component.html",
     styleUrl: "./profile-management.component.scss",
     changeDetection: ChangeDetectionStrategy.OnPush,

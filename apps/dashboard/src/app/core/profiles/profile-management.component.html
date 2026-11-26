@@ -11,9 +11,13 @@
             <h1>{{ "profiles.title" | transloco }}</h1>
             <p class="description">{{ "profiles.description" | transloco }}</p>
         </div>
-        <button type="button" class="secondary-button" (click)="startNew()">
-            {{ "profiles.newProfile" | transloco }}
-        </button>
+        <p-button
+            [label]="'profiles.newProfile' | transloco"
+            icon="pi pi-plus"
+            severity="secondary"
+            [outlined]="true"
+            (onClick)="startNew()"
+        />
     </header>
 
     @if (errorMessage) {
@@ -21,7 +25,7 @@
     }
 
     <section class="profile-layout" aria-label="Local profiles">
-        <div class="profile-list">
+        <p-card styleClass="profile-list">
             <h2>{{ "profiles.savedProfiles" | transloco }}</h2>
             @if (loading) {
                 <p>{{ "profiles.loading" | transloco }}</p>
@@ -42,46 +46,69 @@
                             }
                         </div>
                         <div class="profile-actions">
-                            <button type="button" class="text-button" (click)="edit(profile)">
-                                {{ "profiles.edit" | transloco }}
-                            </button>
-                            <button type="button" class="text-button" (click)="chooseAvatar(profile.id)">
-                                {{ "profiles.picture" | transloco }}
-                            </button>
+                            <p-button
+                                [label]="'profiles.edit' | transloco"
+                                severity="secondary"
+                                [text]="true"
+                                size="small"
+                                (onClick)="edit(profile)"
+                            />
+                            <p-button
+                                [label]="'profiles.picture' | transloco"
+                                severity="secondary"
+                                [text]="true"
+                                size="small"
+                                (onClick)="chooseAvatar(profile.id)"
+                            />
                             @if (!profile.isActive) {
-                                <button type="button" class="text-button" (click)="switchProfile(profile.id)">
-                                    {{ "profiles.switch" | transloco }}
-                                </button>
+                                <p-button
+                                    [label]="'profiles.switch' | transloco"
+                                    severity="primary"
+                                    [text]="true"
+                                    size="small"
+                                    (onClick)="switchProfile(profile.id)"
+                                />
                             }
                         </div>
                     </article>
                 }
             }
-        </div>
+        </p-card>
 
-        <form class="profile-editor" (ngSubmit)="save()">
-            <h2>{{ (editingProfileId ? "profiles.editTitle" : "profiles.createTitle") | transloco }}</h2>
-            <label for="profile-nickname">{{ "profiles.nickname" | transloco }}</label>
-            <input
-                id="profile-nickname"
-                name="nickname"
-                type="text"
-                maxlength="40"
-                autocomplete="off"
-                [(ngModel)]="nickname"
-                [placeholder]="'profiles.nicknamePlaceholder' | transloco"
-                required
-            />
-            <p class="field-hint">{{ "profiles.nicknameHint" | transloco }}</p>
-            <button type="submit" class="primary-button" [disabled]="saving || !nickname.trim()">
-                {{ (saving ? "profiles.saving" : "profiles.save") | transloco }}
-            </button>
-            @if (editingProfileId) {
-                <button type="button" class="text-button cancel-button" (click)="startNew()">
-                    {{ "profiles.cancel" | transloco }}
-                </button>
-            }
-            <p class="privacy-note">{{ "profiles.localOnly" | transloco }}</p>
-        </form>
+        <p-card styleClass="profile-editor">
+            <form (ngSubmit)="save()">
+                <h2>{{ (editingProfileId ? "profiles.editTitle" : "profiles.createTitle") | transloco }}</h2>
+                <label for="profile-nickname">{{ "profiles.nickname" | transloco }}</label>
+                <input
+                    id="profile-nickname"
+                    name="nickname"
+                    type="text"
+                    pInputText
+                    fluid
+                    maxlength="40"
+                    autocomplete="off"
+                    [(ngModel)]="nickname"
+                    [placeholder]="'profiles.nicknamePlaceholder' | transloco"
+                    required
+                />
+                <p class="field-hint">{{ "profiles.nicknameHint" | transloco }}</p>
+                <p-button
+                    type="submit"
+                    [label]="(saving ? 'profiles.saving' : 'profiles.save') | transloco"
+                    [disabled]="saving || !nickname.trim()"
+                    [loading]="saving"
+                />
+                @if (editingProfileId) {
+                    <p-button
+                        type="button"
+                        [label]="'profiles.cancel' | transloco"
+                        severity="secondary"
+                        [text]="true"
+                        (onClick)="startNew()"
+                    />
+                }
+                <p class="privacy-note">{{ "profiles.localOnly" | transloco }}</p>
+            </form>
+        </p-card>
     </section>
 </main>
