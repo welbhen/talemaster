@@ -1,5 +1,26 @@
 {
     "app": {
         "name": "TaleMaster"
+    },
+    "profiles": {
+        "eyebrow": "Your local space",
+        "title": "Choose who is playing",
+        "description": "Create a simple local profile with a nickname and picture. Switch profiles whenever you like.",
+        "newProfile": "New profile",
+        "savedProfiles": "Saved profiles",
+        "loading": "Loading profiles…",
+        "active": "Active profile",
+        "edit": "Edit",
+        "picture": "Picture",
+        "switch": "Switch",
+        "editTitle": "Edit profile",
+        "createTitle": "Create a profile",
+        "nickname": "Nickname",
+        "nicknamePlaceholder": "Enter a nickname",
+        "nicknameHint": "Use between 1 and 40 characters.",
+        "saving": "Saving…",
+        "save": "Save profile",
+        "cancel": "Cancel",
+        "localOnly": "Profiles are stored locally on this device. They do not control access or permissions."
     }
 }
