@@ -37,16 +37,16 @@ The database and logs locations preserve the existing implementation. Campaign a
 
 ## 3. Storage ownership
 
-| Data | Storage |
-|---|---|
-| Campaigns, players, characters, sessions, dice history | SQLite |
-| Document metadata and campaign/resource relationships | SQLite |
-| Rich-text document bodies | Campaign filesystem |
-| Images and attachments | Campaign filesystem |
-| Imported structured game content | SQLite |
-| Application preferences | SQLite |
-| Backup archives and staging data | Filesystem |
-| Application logs | Filesystem |
+| Data                                                   | Storage             |
+|--------------------------------------------------------|---------------------|
+| Campaigns, players, characters, sessions, dice history | SQLite              |
+| Document metadata and campaign/resource relationships  | SQLite              |
+| Rich-text document bodies                              | Campaign filesystem |
+| Images and attachments                                 | Campaign filesystem |
+| Imported structured game content                      | SQLite              |
+| Application preferences                                | SQLite              |
+| Backup archives and staging data                       | Filesystem          |
+| Application logs                                       | Filesystem          |
 
 SQLite is authoritative for structured records and resource ownership. The filesystem stores document bodies and binary resources. The renderer never accesses persistent paths directly.
 
