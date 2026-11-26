@@ -5,17 +5,19 @@
  */
 
 import { provideHttpClient } from "@angular/common/http";
-import { ApplicationConfig, isDevMode, provideBrowserGlobalErrorListeners } from "@angular/core";
+import { ApplicationConfig, ErrorHandler, isDevMode, provideBrowserGlobalErrorListeners } from "@angular/core";
 import { provideRouter } from "@angular/router";
 import { provideTransloco } from "@jsverse/transloco";
 import { provideOptimus } from "@openng/optimus-ui/config";
 import Material from "@openng/optimus-ui-themes/material";
 import { appRoutes } from "./app.routes";
+import { RendererErrorHandler } from "./core/logging/renderer-error-handler";
 import { TranslocoHttpLoader } from "./transloco-loader";
 
 export const appConfig: ApplicationConfig = {
     providers: [
         provideBrowserGlobalErrorListeners(),
+        { provide: ErrorHandler, useClass: RendererErrorHandler },
         provideRouter(appRoutes),
         provideHttpClient(),
         provideTransloco({

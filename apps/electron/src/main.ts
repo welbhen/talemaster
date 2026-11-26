@@ -6,6 +6,7 @@
 
 import { app, BrowserWindow } from "electron";
 import { join } from "node:path";
+import { pathToFileURL } from "node:url";
 
 import { closeDatabase, initializeDatabase } from "@talemaster/database";
 import type { DatabaseContext } from "@talemaster/database";
@@ -13,6 +14,10 @@ import { createApplicationLogger } from "@talemaster/logging";
 import type { Logger } from "@talemaster/logging";
 
 import { handleApplicationError } from "./application-error-handler";
+import { createDatabaseIpcAdapter } from "./ipc/adapters/database.ipc-adapter";
+import { createLoggingIpcAdapter } from "./ipc/adapters/logging.ipc-adapter";
+import { createIpcSecurity } from "./ipc/ipc-security";
+import { registerIpc, type IpcRegistration } from "./ipc/ipc-registration";
 import {
     createApplicationStoragePaths,
     ensureApplicationStorage,
@@ -20,8 +25,11 @@ import {
 
 const isDevelopment = !app.isPackaged;
 const storagePaths = createApplicationStoragePaths(app.getPath("userData"));
+const rendererPath = join(__dirname, "dashboard/browser/index.html");
 let logger: Logger | undefined;
 let databaseContext: DatabaseContext | undefined;
+let mainWindow: BrowserWindow | null = null;
+let ipcRegistration: IpcRegistration | undefined;
 
 function handleFatalError(context: string, error: unknown): void {
     handleApplicationError(context, error, logger, () => app.quit());
@@ -29,7 +37,7 @@ function handleFatalError(context: string, error: unknown): void {
 
 function createWindow(): void {
     try {
-        const mainWindow = new BrowserWindow({
+        mainWindow = new BrowserWindow({
             width: 1440,
             height: 900,
             minWidth: 1024,
@@ -42,9 +50,13 @@ function createWindow(): void {
             },
         });
 
+        mainWindow.on("closed", () => {
+            mainWindow = null;
+        });
+
         const loadPromise = isDevelopment
             ? mainWindow.loadURL("http://localhost:4200")
-            : mainWindow.loadFile(join(__dirname, "dashboard/browser/index.html"));
+            : mainWindow.loadFile(rendererPath);
 
         void loadPromise.catch((error: unknown) => {
             handleFatalError("Failed to load the application window", error);
@@ -55,9 +67,10 @@ function createWindow(): void {
 }
 
 app.on("before-quit", () => {
-    if (!databaseContext) {
-        return;
-    }
+    ipcRegistration?.dispose();
+    ipcRegistration = undefined;
+
+    if (!databaseContext) return;
 
     try {
         closeDatabase(databaseContext);
@@ -86,6 +99,20 @@ void app
 
         databaseContext = initializeDatabase({
             directory: storagePaths.database,
+        });
+
+        const ipcSecurity = createIpcSecurity({
+            getMainWindow: () => mainWindow,
+            ...(isDevelopment ? { developmentOrigin: "http://localhost:4200" } : {}),
+            productionUrl: pathToFileURL(rendererPath).href,
+        });
+
+        ipcRegistration = registerIpc({
+            assertTrustedSender: ipcSecurity.assertTrustedSender,
+            adapters: [
+                createLoggingIpcAdapter(logger),
+                createDatabaseIpcAdapter(databaseContext),
+            ],
         });
 
         createWindow();
