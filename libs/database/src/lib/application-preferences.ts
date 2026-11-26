@@ -24,10 +24,7 @@ function serializeValue(value: unknown): string {
         throw new TypeError("Preference value must be JSON-serializable.");
     }
 
-    if (
-        serialized === undefined ||
-        Buffer.byteLength(serialized, "utf8") > MAX_VALUE_BYTES
-    ) {
+    if (serialized === undefined || Buffer.byteLength(serialized, "utf8") > MAX_VALUE_BYTES) {
         throw new RangeError("Preference value is empty or exceeds the maximum supported size.");
     }
 
@@ -63,19 +60,21 @@ export function setApplicationPreference(
     const serialized = serializeValue(value);
 
     database
-        .prepare(`
+        .prepare(
+            `
             INSERT INTO application_preferences (key, value_json, updated_at)
             VALUES (?, ?, CURRENT_TIMESTAMP)
             ON CONFLICT(key) DO UPDATE SET
                 value_json = excluded.value_json,
                 updated_at = CURRENT_TIMESTAMP
-        `)
+        `,
+        )
         .run(key, serialized);
 }
 
 export function deleteApplicationPreference(database: Database.Database, key: string): boolean {
     validateKey(key);
-    return database
-        .prepare("DELETE FROM application_preferences WHERE key = ?")
-        .run(key).changes > 0;
+    return (
+        database.prepare("DELETE FROM application_preferences WHERE key = ?").run(key).changes > 0
+    );
 }

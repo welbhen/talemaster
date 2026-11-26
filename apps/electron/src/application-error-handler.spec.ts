@@ -50,7 +50,10 @@ describe("handleApplicationError", () => {
 
         try {
             handleApplicationError("Application initialization failed", "failure", undefined, quit);
-            expect(consoleError).toHaveBeenCalledWith("Application initialization failed", "failure");
+            expect(consoleError).toHaveBeenCalledWith(
+                "Application initialization failed",
+                "failure",
+            );
             expect(quit).toHaveBeenCalledTimes(1);
         } finally {
             consoleError.mockRestore();

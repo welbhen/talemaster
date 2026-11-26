@@ -38,12 +38,12 @@ The database and logs locations preserve the existing implementation. Campaign a
 ## 3. Storage ownership
 
 | Data                                                   | Storage             |
-|--------------------------------------------------------|---------------------|
+| ------------------------------------------------------ | ------------------- |
 | Campaigns, players, characters, sessions, dice history | SQLite              |
 | Document metadata and campaign/resource relationships  | SQLite              |
 | Rich-text document bodies                              | Campaign filesystem |
 | Images and attachments                                 | Campaign filesystem |
-| Imported structured game content                      | SQLite              |
+| Imported structured game content                       | SQLite              |
 | Application preferences                                | SQLite              |
 | Backup archives and staging data                       | Filesystem          |
 | Application logs                                       | Filesystem          |
@@ -77,8 +77,8 @@ Persist the ngx-editor structured document model as JSON, not rendered HTML. Eac
 
 ```json
 {
-  "formatVersion": 1,
-  "content": {}
+    "formatVersion": 1,
+    "content": {}
 }
 ```
 
