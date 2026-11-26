@@ -5,7 +5,7 @@
  */
 
 import Database from "better-sqlite3";
-import { existsSync, mkdtempSync, rmSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
@@ -97,6 +97,7 @@ describe("database", () => {
     it("opens an existing version-1 database, preserves its data, and applies new migrations", () => {
         const databaseDirectory = join(directory, "existing-database");
         const databasePath = join(databaseDirectory, "talemaster.sqlite");
+        mkdirSync(databaseDirectory, { recursive: true });
         const existingDatabase = new Database(databasePath);
 
         existingDatabase.exec(`
