@@ -8,3 +8,4 @@ export * from "./lib/db";
 export * from "./lib/db.types";
 export * from "./lib/database-backup";
 export * from "./lib/application-preferences";
+export * from "./lib/local-profiles";
