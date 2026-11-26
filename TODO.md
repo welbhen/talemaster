@@ -31,9 +31,9 @@ The renderer phase is delivered through four sequential PRs: WP1 (renderer loggi
 - [x] Structured logging, console and rotating JSON Lines file transports implemented.
 - [x] Logging integrated into the Electron main-process lifecycle.
 - [x] Renderer logging IPC contract, preload capability, and main-process adapter implemented.
-- [ ] Register logging/database IPC adapters in the Electron main-process lifecycle behind trusted-sender validation.
-- [ ] Add Angular-injectable renderer LoggerService and framework ErrorHandler using the existing IPC capability.
-- [ ] Verify renderer log persistence and safe fallback when preload/IPC is unavailable.
+- [x] Register logging/database IPC adapters in the Electron main-process lifecycle behind trusted-sender validation.
+- [x] Add Angular-injectable renderer LoggerService and framework ErrorHandler using the existing IPC capability.
+- [ ] Verify renderer log persistence in a running Electron integration environment; safe console fallback is implemented and unit-tested.
 - [x] Logging and IPC tests implemented.
 - [x] Secure Electron IPC architecture and application integration completed.
 - [x] Copyright header configuration and automation implemented.
@@ -58,9 +58,9 @@ The renderer phase is delivered through four sequential PRs: WP1 (renderer loggi
 - [x] Initialize logging before SQLite so database initialization failures can be recorded.
 - [x] Integrate the logger into the Electron main-process lifecycle.
 - [x] Replace existing application-level console logging with the appropriate logger methods.
-- [x] Implement renderer logging through the secure IPC boundary.
+- [x] Implement the renderer-to-main logging IPC adapter; Angular service integration is tracked in the renderer application phase.
 - [x] Add tests for log levels, timestamps, metadata, error serialization, console output, file persistence, rotation, retention, and failure handling.
-- [x] Verify development and production logging behavior.
+- [ ] Verify development and production renderer logging behavior in a running Electron application.
 
 ### 2. Copyright headers and compliance automation
 
@@ -116,14 +116,14 @@ The renderer phase is delivered through four sequential PRs: WP1 (renderer loggi
 
 ### PR 1 — WP1: Renderer logging foundation
 
-- [ ] Wire existing IPC adapters into the Electron main-process lifecycle with trusted-sender validation.
-- [ ] Implement Angular LoggerService using the restricted preload logging capability.
-- [ ] Normalize renderer metadata and errors into bounded structured-clone-safe payloads.
-- [ ] Add safe console fallback for unavailable/rejected IPC logging without recursive logging.
-- [ ] Route Angular framework errors through a custom ErrorHandler.
-- [ ] Add renderer logger, ErrorHandler, and Electron IPC registration tests.
-- [ ] Add focused npm scripts for dashboard/Electron lint, test, and build; expose desktop assembly and a combined verification command.
-- [ ] Update technical decisions and renderer architecture documentation.
+- [x] Wire existing IPC adapters into the Electron main-process lifecycle with trusted-sender validation.
+- [x] Implement Angular LoggerService using the restricted preload logging capability.
+- [x] Normalize renderer metadata and errors into bounded structured-clone-safe payloads.
+- [x] Add safe console fallback for unavailable/rejected IPC logging without recursive logging.
+- [x] Route Angular framework errors through a custom ErrorHandler.
+- [x] Add renderer logger and ErrorHandler unit tests; [ ] add/verify IPC registration integration coverage.
+- [x] Add focused npm scripts for dashboard/Electron lint, test, and build; expose desktop assembly and a combined verification command.
+- [x] Update technical decisions and renderer architecture documentation.
 
 ### PR 2 — WP2 + WP3: Local profiles
 
