@@ -35,11 +35,12 @@ export class LoggerService {
         metadata?: RendererLogMetadata,
         error?: unknown,
     ): void {
+        const normalizedMetadata = this.normalizeMetadata(metadata);
         const request: RendererLogRequest = {
             level,
             message: this.normalizeMessage(message),
             context: this.context,
-            ...(this.normalizeMetadata(metadata) ? { metadata: this.normalizeMetadata(metadata) } : {}),
+            ...(normalizedMetadata ? { metadata: normalizedMetadata } : {}),
             ...(error !== undefined ? { error: this.serializeError(error) } : {}),
         };
 
@@ -86,7 +87,11 @@ export class LoggerService {
                     result[key.slice(0, 200)] = `${value.name}: ${value.message}`.slice(0, 2_000);
                 } else if (value !== undefined) {
                     try {
-                        result[key.slice(0, 200)] = JSON.stringify(value).slice(0, 2_000);
+                        const serialized = JSON.stringify(value);
+                        result[key.slice(0, 200)] =
+                            typeof serialized === "string"
+                                ? serialized.slice(0, 2_000)
+                                : String(value).slice(0, 2_000);
                     } catch {
                         result[key.slice(0, 200)] = "[Unserializable value]";
                     }
