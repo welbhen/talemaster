@@ -88,7 +88,7 @@ describe("database", () => {
             .pluck()
             .get();
 
-        expect(migrations).toEqual([{ version: 1 }, { version: 2 }]);
+        expect(migrations).toEqual([{ version: 1 }, { version: 2 }, { version: 3 }]);
         expect(secondAppliedAt).toBe(firstAppliedAt);
 
         closeDatabase(secondContext);
@@ -130,12 +130,18 @@ describe("database", () => {
         ).toEqual([
             { version: 1, name: "initial" },
             { version: 2, name: "application-preferences" },
+            { version: 3, name: "local-profiles" },
         ]);
         expect(
             context.connection
                 .prepare(
                     "SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'application_preferences'",
                 )
+                .get(),
+        ).toBeDefined();
+        expect(
+            context.connection
+                .prepare("SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'profiles'")
                 .get(),
         ).toBeDefined();
 

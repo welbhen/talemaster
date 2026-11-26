@@ -34,6 +34,10 @@ const electronAPI = {
     database: {
         health: () => ipc.invoke("database:request", { operation: "health" }),
     },
+    profiles: {
+        request: (request: import("./ipc/profile-ipc.types").ProfileRequest) =>
+            ipc.invoke("profiles:request", request),
+    },
 };
 
 contextBridge.exposeInMainWorld("electronAPI", electronAPI);

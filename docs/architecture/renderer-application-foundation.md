@@ -42,7 +42,9 @@ Each PR must be merged before the next branch is created from the updated `maste
 - Provide a default/guest first-launch experience without mandatory setup.
 - Persist profile metadata and active profile selection in SQLite.
 - Copy selected avatar files into application-managed storage under `userData/talemaster`; never rely on the source file remaining available.
-- Validate avatar file type, decoded image, and size in the main process. Use generated filenames and narrow IPC methods.
+- Validate avatar file signature and size in the main process (PNG, JPEG, WebP; 2 MiB maximum). Use generated filenames and narrow IPC methods. Full image decoding validation is not yet implemented.
+- Provide a profile-management view at the renderer root with create, edit, list, picture selection, and switch actions.
+- Expose avatar data as a data URL to the renderer; never expose filesystem paths.
 - Do not infer profile ownership of campaigns or other data. That relationship remains deferred.
 
 ## WP4 + WP5 — Angular application shell

@@ -18,6 +18,7 @@ export interface ApplicationStoragePaths {
     readonly fullBackups: string;
     readonly campaignBackups: string;
     readonly logs: string;
+    readonly profileAvatars: string;
 }
 
 export interface CampaignStoragePaths {
@@ -44,6 +45,7 @@ export function createApplicationStoragePaths(userDataPath: string): Application
         fullBackups: join(backups, "full"),
         campaignBackups: join(backups, "campaigns"),
         logs: join(root, "logs"),
+        profileAvatars: join(root, "profile-avatars"),
     };
 }
 
@@ -101,6 +103,7 @@ export async function ensureApplicationStorage(paths: ApplicationStoragePaths): 
         paths.fullBackups,
         paths.campaignBackups,
         paths.logs,
+        paths.profileAvatars,
     ];
 
     for (const directory of directories) {

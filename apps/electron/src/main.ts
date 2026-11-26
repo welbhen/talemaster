@@ -16,6 +16,7 @@ import type { Logger } from "@talemaster/logging";
 import { handleApplicationError } from "./application-error-handler";
 import { createDatabaseIpcAdapter } from "./ipc/adapters/database.ipc-adapter";
 import { createLoggingIpcAdapter } from "./ipc/adapters/logging.ipc-adapter";
+import { createProfilesIpcAdapter } from "./ipc/adapters/profiles.ipc-adapter";
 import { createIpcSecurity } from "./ipc/ipc-security";
 import { registerIpc, type IpcRegistration } from "./ipc/ipc-registration";
 import {
@@ -109,7 +110,11 @@ void app
 
         ipcRegistration = registerIpc({
             assertTrustedSender: ipcSecurity.assertTrustedSender,
-            adapters: [createLoggingIpcAdapter(logger), createDatabaseIpcAdapter(databaseContext)],
+            adapters: [
+                createLoggingIpcAdapter(logger),
+                createDatabaseIpcAdapter(databaseContext),
+                createProfilesIpcAdapter({ database: databaseContext, storage: storagePaths }),
+            ],
         });
 
         createWindow();

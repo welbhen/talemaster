@@ -1,0 +1,114 @@
+<!--
+ * Copyright 2026 Welberth Marques
+ * github.com/welbhen/talemaster
+ * SPDX-License-Identifier: Apache-2.0
+-->
+
+<main class="profiles-page">
+    <header class="page-heading">
+        <div>
+            <p class="eyebrow">{{ "profiles.eyebrow" | transloco }}</p>
+            <h1>{{ "profiles.title" | transloco }}</h1>
+            <p class="description">{{ "profiles.description" | transloco }}</p>
+        </div>
+        <p-button
+            [label]="'profiles.newProfile' | transloco"
+            icon="pi pi-plus"
+            severity="secondary"
+            [outlined]="true"
+            (onClick)="startNew()"
+        />
+    </header>
+
+    @if (errorMessage) {
+        <p class="error-message" role="alert">{{ errorMessage }}</p>
+    }
+
+    <section class="profile-layout" aria-label="Local profiles">
+        <p-card styleClass="profile-list">
+            <h2>{{ "profiles.savedProfiles" | transloco }}</h2>
+            @if (loading) {
+                <p>{{ "profiles.loading" | transloco }}</p>
+            } @else {
+                @for (profile of profiles; track profile.id) {
+                    <article class="profile-card" [class.active]="profile.id === activeProfileId">
+                        <div class="avatar">
+                            @if (profile.avatarDataUrl) {
+                                <img [src]="profile.avatarDataUrl" [alt]="profile.nickname" />
+                            } @else {
+                                <span>{{ profile.nickname.slice(0, 1).toUpperCase() }}</span>
+                            }
+                        </div>
+                        <div class="profile-info">
+                            <strong>{{ profile.nickname }}</strong>
+                            @if (profile.isActive) {
+                                <span class="active-label">{{ "profiles.active" | transloco }}</span>
+                            }
+                        </div>
+                        <div class="profile-actions">
+                            <p-button
+                                [label]="'profiles.edit' | transloco"
+                                severity="secondary"
+                                [text]="true"
+                                size="small"
+                                (onClick)="edit(profile)"
+                            />
+                            <p-button
+                                [label]="'profiles.picture' | transloco"
+                                severity="secondary"
+                                [text]="true"
+                                size="small"
+                                (onClick)="chooseAvatar(profile.id)"
+                            />
+                            @if (!profile.isActive) {
+                                <p-button
+                                    [label]="'profiles.switch' | transloco"
+                                    severity="primary"
+                                    [text]="true"
+                                    size="small"
+                                    (onClick)="switchProfile(profile.id)"
+                                />
+                            }
+                        </div>
+                    </article>
+                }
+            }
+        </p-card>
+
+        <p-card styleClass="profile-editor">
+            <form (ngSubmit)="save()">
+                <h2>{{ (editingProfileId ? "profiles.editTitle" : "profiles.createTitle") | transloco }}</h2>
+                <label for="profile-nickname">{{ "profiles.nickname" | transloco }}</label>
+                <input
+                    id="profile-nickname"
+                    name="nickname"
+                    type="text"
+                    pInputText
+                    fluid
+                    maxlength="40"
+                    autocomplete="off"
+                    [(ngModel)]="nickname"
+                    [placeholder]="'profiles.nicknamePlaceholder' | transloco"
+                    required
+                />
+                <p class="field-hint">{{ "profiles.nicknameHint" | transloco }}</p>
+                <p-button
+                    type="submit"
+                    [label]="(saving ? 'profiles.saving' : 'profiles.save') | transloco"
+                    [disabled]="saving || !nickname.trim()"
+                    [loading]="saving"
+                />
+                @if (editingProfileId) {
+                    <p-button
+                        type="button"
+                        [label]="'profiles.cancel' | transloco"
+                        severity="secondary"
+                        [text]="true"
+                        (onClick)="startNew()"
+                    />
+                }
+                <p class="privacy-note">{{ "profiles.localOnly" | transloco }}</p>
+            </form>
+        </p-card>
+    </section>
+</main>

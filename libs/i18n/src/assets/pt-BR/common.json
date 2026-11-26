@@ -1,5 +1,26 @@
 {
     "app": {
         "name": "TaleMaster"
+    },
+    "profiles": {
+        "eyebrow": "Seu espaço local",
+        "title": "Quem está jogando?",
+        "description": "Crie um perfil local simples com apelido e foto. Você pode trocar de perfil quando quiser.",
+        "newProfile": "Novo perfil",
+        "savedProfiles": "Perfis salvos",
+        "loading": "Carregando perfis…",
+        "active": "Perfil ativo",
+        "edit": "Editar",
+        "picture": "Foto",
+        "switch": "Trocar",
+        "editTitle": "Editar perfil",
+        "createTitle": "Criar perfil",
+        "nickname": "Apelido",
+        "nicknamePlaceholder": "Digite um apelido",
+        "nicknameHint": "Use entre 1 e 40 caracteres.",
+        "saving": "Salvando…",
+        "save": "Salvar perfil",
+        "cancel": "Cancelar",
+        "localOnly": "Os perfis ficam salvos neste dispositivo. Eles não controlam acesso ou permissões."
     }
 }

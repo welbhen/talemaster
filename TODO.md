@@ -127,14 +127,14 @@ The renderer phase is delivered through four sequential PRs: WP1 (renderer loggi
 
 ### PR 2 — WP2 + WP3: Local profiles
 
-- [ ] Add local profile schema and transactional migration.
-- [ ] Implement profile metadata repository and main-process application service.
-- [ ] Implement managed avatar storage and validation through a narrow native file-selection capability.
-- [ ] Expose typed profile IPC operations through preload.
-- [ ] Implement Angular profile service and profile create/edit/list/switch experience.
-- [ ] Provide a default first-launch profile without mandatory setup.
-- [ ] Add profile and avatar lifecycle tests.
-- [ ] Do not associate campaigns or other domain data with profiles until that relationship is explicitly decided.
+- [ ] Add local profile schema and transactional migration (migration 003); implementation is in place, validation pending.
+- [ ] Implement profile metadata repository and main-process application service; implementation is in place, validation pending.
+- [ ] Implement managed avatar storage and validation through a narrow native file-selection capability (PNG/JPEG/WebP signature; 2 MiB maximum); implementation is in place, validation pending.
+- [ ] Expose typed profile IPC operations through preload and trusted-sender registration; implementation is in place, validation pending.
+- [ ] Implement Angular profile service and profile create/edit/list/switch experience; implementation is in place, validation pending.
+- [ ] Provide a default first-launch Adventurer profile without mandatory setup; implementation is in place, validation pending.
+- [ ] Execute profile repository, avatar store, IPC adapter, and Angular service tests (test coverage has been added).
+- [x] Keep campaign and other domain data unassociated with profiles; ownership remains explicitly undecided.
 
 ### PR 3 — WP4 + WP5: Application shell and preferences
 
