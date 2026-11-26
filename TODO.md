@@ -1,6 +1,6 @@
 # TaleMaster — Technical TODO
 
-This file tracks the next engineering tasks for the current foundation phase. It is intentionally separate from the product feature roadmap.
+This file tracks engineering work for the current foundation phase. It is intentionally separate from the product feature roadmap.
 
 ## Current foundation status
 
@@ -21,20 +21,20 @@ This file tracks the next engineering tasks for the current foundation phase. It
 - [x] Transactional migration execution and rollback behavior implemented.
 - [x] Initial infrastructure-only migration implemented; no campaign or feature tables introduced.
 - [x] Database connection shutdown integrated into the Electron application lifecycle.
-- [x] Database infrastructure tests implemented and passing locally.
-- [x] Root workspace-wide lint command configured and confirmed working.
-- [x] Root workspace-wide test command configured and confirmed working.
+- [x] Database infrastructure tests implemented.
+- [x] Root workspace-wide lint command configured.
+- [x] Root workspace-wide test command configured.
 - [x] Nx recursive root-target invocation issue resolved.
 - [x] Dedicated logging library implemented under `libs/logging`.
 - [x] Structured logging, console and rotating JSON Lines file transports implemented.
 - [x] Logging integrated into the Electron main-process lifecycle.
 - [x] Renderer logging integrated through the secure IPC boundary.
-- [x] Logging and IPC tests implemented and confirmed passing locally.
+- [x] Logging and IPC tests implemented.
 - [x] Secure Electron IPC architecture and application integration completed.
 - [x] Copyright header configuration and automation implemented.
 - [x] Copyright headers applied and compliance validation tested successfully.
-- [ ] GitHub Actions test execution and CI validation updates: changes prepared; awaiting push and successful GitHub Actions verification.
-- [ ] Validate Electron production build and packaging with the integrated logging and IPC infrastructure.
+- [ ] Verify GitHub Actions test execution and CI validation on the current PR head.
+- [ ] Validate Electron production build and packaging with the integrated logging, IPC, and storage infrastructure.
 
 ## Completed foundation work
 
@@ -54,34 +54,18 @@ This file tracks the next engineering tasks for the current foundation phase. It
 - [x] Integrate the logger into the Electron main-process lifecycle.
 - [x] Replace existing application-level console logging with the appropriate logger methods.
 - [x] Implement renderer logging through the secure IPC boundary.
-- [x] Add and execute tests for log levels, timestamps, metadata, error serialization, console output, file persistence, rotation, retention, and failure handling.
+- [x] Add tests for log levels, timestamps, metadata, error serialization, console output, file persistence, rotation, retention, and failure handling.
 - [x] Verify development and production logging behavior.
 
 ### 2. Copyright headers and compliance automation
 
-- [x] Establish the project copyright header:
-
-    ```text
-    /**
-     * Copyright 2026 Welberth Marques
-     * github.com/welbhen/talemaster
-     * SPDX-License-Identifier: Apache-2.0
-     */
-    ```
-
-- [x] Define comment syntax for each supported source-file type while preserving the exact header text.
-- [x] Include project-owned source files, tests, and configuration source files.
-- [x] Exclude JSON, YAML, Markdown, lockfiles, generated files, dependencies, build outputs, and binary files.
-- [x] Implement a shared copyright-header configuration.
-- [x] Create a script to add missing headers to project source files.
-- [x] Support dry-run mode and prevent duplicate headers.
-- [x] Preserve existing file contents, line endings, BOMs, and shebangs.
-- [x] Create a copyright validation script that exits unsuccessfully when eligible files have missing or invalid headers.
-- [x] Apply headers to existing eligible source files and review the resulting changes.
+- [x] Establish the project copyright header and supported comment syntax.
+- [x] Include project-owned source files, tests, and configuration source files; exclude generated/dependency/build/binary files and non-source formats.
+- [x] Implement shared copyright-header configuration and add/validation scripts.
+- [x] Support dry-run mode, prevent duplicate headers, and preserve file contents, line endings, BOMs, and shebangs.
 - [x] Add `copyright:add` and `copyright:check` npm scripts.
 - [x] Integrate `copyright:check` into GitHub Actions pull-request validation.
-- [x] Add and execute tests for header insertion, validation, exclusions, and special file handling.
-- [x] Validate untracked, staged, ignored, and deleted file handling during file discovery.
+- [x] Add tests for header insertion, validation, exclusions, special file handling, and file discovery.
 
 ### 3. Secure Electron IPC boundary
 
@@ -90,29 +74,42 @@ This file tracks the next engineering tasks for the current foundation phase. It
 - [x] Define explicit IPC channel names and handlers; do not expose generic `send`, `invoke`, filesystem, or SQL execution capabilities.
 - [x] Validate IPC payloads at the process boundary.
 - [x] Review sender/origin authorization and error serialization for IPC handlers.
-- [x] Add and execute tests for valid requests, invalid payloads, unauthorized senders, and error responses.
+- [x] Add tests for valid requests, invalid payloads, unauthorized senders, and error responses.
 - [x] Define how main-process services access the database without exposing the connection to the renderer.
-- [x] Integrate the IPC registration and adapters into the Electron application lifecycle.
+- [x] Integrate IPC registration and adapters into the Electron application lifecycle.
 - [x] Integrate renderer logging through the explicit preload API.
+
+### 4. Application data and filesystem conventions
+
+- [x] Establish the canonical application root at `app.getPath("userData")/talemaster`.
+- [x] Define the storage layout for database, campaigns, content library, backups, logs, and settings.
+- [x] Define ownership boundaries: SQLite owns structured records and metadata; the filesystem owns document bodies, assets, backups, and logs.
+- [x] Define the versioned structured ngx-editor JSON envelope.
+- [x] Decide that application preferences are stored in SQLite and add their migration and CRUD API.
+- [x] Implement UUID-derived campaign/document/asset paths, path containment checks, and symlink rejection for managed paths.
+- [x] Implement campaign directory initialization and document/asset file operations.
+- [x] Keep destructive asset deletion unavailable until metadata-backed ownership/reference checks and recoverable deletion are implemented.
+- [x] Document provisional document/asset size limits in source JSDoc; these are arbitrary engineering defaults, not final product requirements.
+- [ ] Validate initialization against pre-existing directories and files, repeated startup, and unsafe filesystem entries.
+- [ ] Validate existing campaign document reads, malformed documents, asset inventory, and non-destructive behavior.
+- [ ] Validate existing SQLite databases upgrade from migration version 1 without losing prior records.
+- [ ] Validate migration rollback, interrupted initialization, and unsupported/corrupt migration histories.
+- [ ] Validate Windows behavior for replacing existing files atomically.
+- [ ] Decide whether to validate file signatures/content types in addition to extension allowlists.
+- [ ] Design metadata-backed asset ownership, recoverable deletion/journaling, and orphan reconciliation with the campaign schema before enabling destructive lifecycle operations.
+- [ ] Expose only required resource operations through narrowly scoped, sender-authorized IPC contracts when feature/domain contracts are ready.
+
+### 5. Application lifecycle and error handling
+
+- [x] Catch application initialization failures at the Electron `whenReady()` promise boundary.
+- [x] Log fatal initialization/window failures where possible and request orderly application shutdown.
+- [x] Keep shutdown request guaranteed even if error logging unexpectedly throws.
+- [x] Catch asynchronous BrowserWindow content-loading failures and synchronous window-construction failures.
+- [ ] Add integration-level verification of startup failure, window load failure, and shutdown behavior in the Electron runtime.
 
 ## Remaining technical foundation work
 
-### 1. Application data and filesystem conventions
-
-Implementation is present on `feature/storage-conventions`; keep the completion boxes open until PR validation succeeds.
-
-- [ ] Validate the canonical `app.getPath("userData")/talemaster` directory resolver and directory initialization.
-- [ ] Validate UUID-only campaign/document/resource path derivation and path-containment checks.
-- [ ] Validate symlink rejection and safe directory handling.
-- [ ] Validate atomic document and asset writes, size limits, and extension allowlists.
-- [ ] Validate versioned ngx-editor JSON document serialization and unsupported-version rejection.
-- [ ] Validate non-destructive campaign filesystem inventory scanning.
-- [ ] Validate SQLite-backed JSON application preferences migration and CRUD operations.
-- [ ] Design metadata-backed asset ownership, recoverable deletion/journaling, and orphan reconciliation with the campaign schema before enabling destructive lifecycle operations.
-- [ ] Expose only the required resource operations through narrowly scoped, sender-authorized IPC contracts when the feature/domain contracts are ready.
-
-
-### 2. Backup, recovery, and integrity
+### 1. Backup, recovery, and integrity
 
 - [ ] Choose a backup approach that safely accounts for SQLite transactions and any WAL files.
 - [ ] Define backup naming, retention, and storage location.
@@ -120,20 +117,20 @@ Implementation is present on `feature/storage-conventions`; keep the completion 
 - [ ] Add database integrity checks and tests for backup/restore.
 - [ ] Evaluate WAL mode in the context of the backup and recovery design before enabling it by default.
 
-## Remaining technical foundation decisions
+### 2. Architecture and platform decisions
 
 - [ ] Audit the Electron app-level package manifest/lockfile arrangement: retain the app manifest needed by Electron Forge, keep the Nx workspace lockfile authoritative, and remove any redundant nested lockfile only after confirming it is not used by a packaging step.
 - [ ] Finalize the custom state-management library API and responsibilities before implementing feature state.
 - [ ] Decide the supported operating systems and architectures.
 - [ ] Validate native SQLite rebuild/package behavior on each supported target.
-- [ ] Define the initial automated test strategy across domain, renderer, Electron, and persistence layers.
+- [ ] Define the automated test strategy across domain, renderer, Electron, and persistence layers.
 - [ ] Define content-provider normalization contracts and source/license metadata requirements.
-- [ ] Decide document storage lifecycle and versioning strategy.
+- [ ] Decide document storage lifecycle, metadata relationships, and versioning/migration strategy.
 - [ ] Evaluate local-network transport and security only when that optional capability enters scope.
 
 ## GitHub and project maintenance
 
-- [ ] Verify updated GitHub Actions workflows on GitHub after pushing the CI changes.
+- [ ] Verify GitHub Actions workflows and required checks on the current PR head.
 - [ ] Ensure formatting, unit tests, production builds, and copyright validation are enforced on pull requests.
 - [ ] Configure branch protection/rulesets for `master` after the checks have run successfully.
 - [ ] Decide release versioning, changelog, and distribution process.
@@ -147,4 +144,4 @@ Implementation is present on `feature/storage-conventions`; keep the completion 
 
 ---
 
-**Working rule:** Do not mark a task complete until the implementation exists and the relevant validation has actually been executed.
+**Working rule:** Do not mark a task complete until the implementation exists and the relevant validation has actually been executed. A test being added is not the same as that test passing.

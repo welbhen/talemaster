@@ -26,7 +26,19 @@ export type CampaignAssetKind = "images" | "attachments";
 
 const IMAGE_EXTENSIONS = new Set([".png", ".jpg", ".jpeg", ".gif", ".webp"]);
 const ATTACHMENT_EXTENSIONS = new Set([".pdf", ".txt", ".md", ".docx", ".xlsx", ".pptx", ".zip"]);
+
+/**
+ * Provisional safety limit only: 10 MiB is an arbitrary engineering default,
+ * not a finalized product requirement. Revisit it when document-size expectations
+ * and the editor's practical limits are defined.
+ */
 const MAX_DOCUMENT_BYTES = 10 * 1024 * 1024;
+
+/**
+ * Provisional safety limit only: 100 MiB is an arbitrary engineering default,
+ * not a finalized product requirement. Revisit it when supported asset types,
+ * expected campaign sizes, and import workflows are defined.
+ */
 const MAX_ASSET_BYTES = 100 * 1024 * 1024;
 
 export interface StoredAsset {
@@ -143,26 +155,6 @@ export class CampaignFileStore {
         await atomicWrite(destination, data);
 
         return { id, kind, extension: normalizedExtension, size: data.byteLength };
-    }
-
-    async deleteAsset(
-        campaignId: string,
-        kind: CampaignAssetKind,
-        assetId: string,
-        extension: string,
-    ): Promise<void> {
-        const paths = getCampaignStoragePaths(this.storage, campaignId);
-        const id = validateStorageId(assetId, "Asset ID");
-        const normalizedExtension = normalizeExtension(kind, extension);
-        const destination = join(paths[kind], `${id}${normalizedExtension}`);
-        await assertSafeExistingPath(paths[kind], destination);
-        const metadata = await lstat(destination);
-
-        if (!metadata.isFile()) {
-            throw new Error("Only regular asset files can be deleted.");
-        }
-
-        await rm(destination);
     }
 
     async scanCampaign(campaignId: string): Promise<CampaignStorageInventory> {
