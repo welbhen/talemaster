@@ -23,7 +23,12 @@ describe("registerIpc", () => {
         const assertTrustedSender = jest.fn();
         const adapterHandler = jest.fn().mockResolvedValue({ accepted: true });
         const adapter = {
-            register: (registrar: { handle: (channel: string, handler: (event: unknown, request: unknown) => unknown) => void }) => {
+            register: (registrar: {
+                handle: (
+                    channel: string,
+                    handler: (event: unknown, request: unknown) => unknown,
+                ) => void;
+            }) => {
                 registrar.handle("logging:write", adapterHandler as never);
             },
         };
@@ -47,7 +52,12 @@ describe("registerIpc", () => {
         const authorizationError = new Error("untrusted sender");
         const adapterHandler = jest.fn();
         const adapter = {
-            register: (registrar: { handle: (channel: string, handler: (event: unknown, request: unknown) => unknown) => void }) => {
+            register: (registrar: {
+                handle: (
+                    channel: string,
+                    handler: (event: unknown, request: unknown) => unknown,
+                ) => void;
+            }) => {
                 registrar.handle("logging:write", adapterHandler as never);
             },
         };

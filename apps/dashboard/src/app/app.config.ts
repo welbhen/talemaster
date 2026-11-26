@@ -5,7 +5,12 @@
  */
 
 import { provideHttpClient } from "@angular/common/http";
-import { ApplicationConfig, ErrorHandler, isDevMode, provideBrowserGlobalErrorListeners } from "@angular/core";
+import {
+    ApplicationConfig,
+    ErrorHandler,
+    isDevMode,
+    provideBrowserGlobalErrorListeners,
+} from "@angular/core";
 import { provideRouter } from "@angular/router";
 import { provideTransloco } from "@jsverse/transloco";
 import { provideOptimus } from "@openng/optimus-ui/config";
