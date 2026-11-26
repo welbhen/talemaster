@@ -17,7 +17,8 @@ import {
 import type { IpcMainRegistrar } from "@talemaster/ipc-bridge";
 import type { ApplicationStoragePaths } from "../../storage/application-storage";
 import { ProfileAvatarStore } from "../../storage/profile-avatar-store";
-import type { ProfileDto, ProfileIpcChannels, ProfileRequest, ProfileResponse } from "../profile-ipc.types";
+import type { ProfileDto, ProfileRequest, ProfileResponse } from "../profile-ipc.types";
+import type { TaleMasterIpcChannels } from "../ipc-contracts";
 
 function isRecord(value: unknown): value is Record<string, unknown> {
     return typeof value === "object" && value !== null && !Array.isArray(value);
@@ -85,7 +86,7 @@ export function createProfilesIpcAdapter(options: ProfileIpcAdapterOptions) {
     }
 
     return {
-        register(registrar: IpcMainRegistrar<ProfileIpcChannels>): void {
+        register(registrar: IpcMainRegistrar<TaleMasterIpcChannels>): void {
             registrar.handle("profiles:request", async (input) => {
                 const request = validateRequest(input);
 
@@ -102,6 +103,9 @@ export function createProfilesIpcAdapter(options: ProfileIpcAdapterOptions) {
                         setActiveLocalProfile(database, request.profileId);
                         return response();
                     case "choose-avatar": {
+                        if (!listLocalProfiles(database).some((profile) => profile.id === request.profileId)) {
+                            throw new Error("Profile was not found.");
+                        }
                         const selection = await dialog.showOpenDialog({
                             properties: ["openFile"],
                             filters: [{ name: "Images", extensions: ["png", "jpg", "jpeg", "webp"] }],

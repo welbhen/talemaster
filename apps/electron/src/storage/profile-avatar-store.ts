@@ -58,6 +58,13 @@ export class ProfileAvatarStore {
 
     async save(sourcePath: string): Promise<StoredProfileAvatar> {
         await ensureAvatarDirectory(this.directory);
+        const sourceMetadata = await lstat(sourcePath);
+        if (!sourceMetadata.isFile() || sourceMetadata.isSymbolicLink()) {
+            throw new TypeError("Choose a regular image file.");
+        }
+        if (sourceMetadata.size === 0 || sourceMetadata.size > MAX_AVATAR_BYTES) {
+            throw new RangeError("Profile pictures must be smaller than 2 MiB.");
+        }
         const data = await readFile(sourcePath);
 
         if (data.byteLength === 0 || data.byteLength > MAX_AVATAR_BYTES) {
