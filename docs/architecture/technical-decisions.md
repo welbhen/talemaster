@@ -67,12 +67,14 @@ Do not introduce another application root or revisit this decision.
 ## Local profile decision
 
 - Profiles are local convenience profiles, not accounts or authorization principals.
-- Nickname and active-profile reference are stored in SQLite.
-- Profile pictures are copied into an application-managed directory beneath the canonical application root; the database stores only a managed asset reference.
+- Profile records contain a UUID, nickname (1–40 printable characters), optional avatar filename, active flag, and timestamps; records and active-profile state are stored in SQLite.
+- Profile pictures are copied into `userData/talemaster/profile-avatars`; the database stores only a generated managed filename.
 - File selection and filesystem operations are performed by Electron main through narrow IPC capabilities.
-- Avatar inputs are validated and stored under generated application-controlled names.
+- Avatar files are limited to 2 MiB and PNG, JPEG, or WebP signatures; generated filenames and atomic file writes are used. SVG and arbitrary file paths are not accepted.
+- The renderer receives bounded image data URLs through the profile IPC response; it never receives avatar filesystem paths.
 - First launch must work without forcing profile creation; a default profile experience is provided.
-- Profiles may be created, edited, and switched freely.
+- Profiles may be created, edited, and switched freely; the initial profile-management view is available at the renderer root.
+- Profile pictures replaced by a new picture are retained for now; automatic deletion/orphan cleanup is deferred until a recoverable asset lifecycle is designed.
 - Whether campaigns or other domain data are associated with a profile is **not decided** and must not be inferred by implementation.
 
 ## Renderer application shell
