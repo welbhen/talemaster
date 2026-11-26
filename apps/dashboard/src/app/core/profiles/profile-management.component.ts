@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { ChangeDetectionStrategy, Component, OnInit, inject } from "@angular/core";
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { TranslocoPipe } from "@jsverse/transloco";
 import { LoggerService } from "../logging/logger.service";
@@ -22,6 +22,7 @@ import { ProfileService } from "./profile.service";
 export class ProfileManagementComponent implements OnInit {
     private readonly profilesService = inject(ProfileService);
     private readonly logger = inject(LoggerService);
+    private readonly changeDetector = inject(ChangeDetectorRef);
 
     protected profiles: readonly Profile[] = [];
     protected activeProfileId = "";
@@ -50,6 +51,7 @@ export class ProfileManagementComponent implements OnInit {
             this.logger.error("Failed to load local profiles", error);
         } finally {
             this.loading = false;
+            this.changeDetector.markForCheck();
         }
     }
 
@@ -86,6 +88,7 @@ export class ProfileManagementComponent implements OnInit {
             this.logger.error("Failed to save local profile", error);
         } finally {
             this.saving = false;
+            this.changeDetector.markForCheck();
         }
     }
 
@@ -97,6 +100,8 @@ export class ProfileManagementComponent implements OnInit {
         } catch (error) {
             this.errorMessage = "Could not switch profile.";
             this.logger.error("Failed to switch local profile", error);
+        } finally {
+            this.changeDetector.markForCheck();
         }
     }
 
@@ -106,6 +111,8 @@ export class ProfileManagementComponent implements OnInit {
         } catch (error) {
             this.errorMessage = error instanceof Error ? error.message : "Could not update profile picture.";
             this.logger.error("Failed to update profile picture", error);
+        } finally {
+            this.changeDetector.markForCheck();
         }
     }
 
